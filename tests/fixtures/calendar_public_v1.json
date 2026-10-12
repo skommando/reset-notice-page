@@ -1,0 +1,70 @@
+{
+  "calendar_schema_version": 1,
+  "generated_at": "2026-10-12T15:00:00+08:00",
+  "checked_at_range": {
+    "min": "2026-10-07T15:00+08:00",
+    "max": "2026-10-07T15:00+08:00"
+  },
+  "coverage": {
+    "protocol_versions": [
+      2
+    ],
+    "notes": [
+      "仅覆盖通过校验的非预览 reset_notice 结构化来源；无协议的历史邮件可能缺失。"
+    ]
+  },
+  "events": [
+    {
+      "id": "123e4567-e89b-12d3-a456-426614174000",
+      "reset_kind": "forced",
+      "status": "confirmed",
+      "executed_at": {
+        "value": "2026-10-08",
+        "precision": "date"
+      },
+      "planned_at": null,
+      "previous_planned_at": null,
+      "eligibility_summary": null,
+      "verification": {
+        "state": "verified",
+        "fields": []
+      },
+      "display_date": "2026-10-08",
+      "display_basis": "executed_at",
+      "source_ids": [
+        "source-sha256:96d83a375baee82501356c68b3c0bf2133f902e74776e517d205f4e9da5a41ec"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "source-sha256:96d83a375baee82501356c68b3c0bf2133f902e74776e517d205f4e9da5a41ec",
+      "url": "https://x.com/thsottiaux/status/123",
+      "text": "Forced reset confirmed. Planned October 8; delayed October 9; cancelled. Paid accounts.",
+      "published_at": null,
+      "publication_basis": "unknown",
+      "text_completeness": "complete",
+      "verification": {
+        "state": "pending",
+        "fields": [
+          "published_at"
+        ]
+      },
+      "versions": [
+        {
+          "text": "Forced reset confirmed. Planned October 8; delayed October 9; cancelled. Paid accounts.",
+          "published_at": null,
+          "publication_basis": "unknown",
+          "text_completeness": "complete",
+          "verification": {
+            "state": "pending",
+            "fields": [
+              "published_at"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "unlinked_sources": []
+}

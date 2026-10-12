@@ -1,0 +1,676 @@
+{
+  "description": "Synthetic predicates evaluated by the binding Python public validator; never production notices.",
+  "python_unicode_version": "15.0.0",
+  "cases": [
+    {
+      "name": "email-local-casefold-U+0130",
+      "mode": "text",
+      "value": "İ@example.com",
+      "accepted": false
+    },
+    {
+      "name": "email-domain-casefold-U+0130",
+      "mode": "text",
+      "value": "a@İ.example",
+      "accepted": false
+    },
+    {
+      "name": "email-local-casefold-U+0131",
+      "mode": "text",
+      "value": "ı@example.com",
+      "accepted": false
+    },
+    {
+      "name": "email-domain-casefold-U+0131",
+      "mode": "text",
+      "value": "a@ı.example",
+      "accepted": false
+    },
+    {
+      "name": "email-local-casefold-U+017F",
+      "mode": "text",
+      "value": "ſ@example.com",
+      "accepted": false
+    },
+    {
+      "name": "email-domain-casefold-U+017F",
+      "mode": "text",
+      "value": "a@ſ.example",
+      "accepted": false
+    },
+    {
+      "name": "email-local-casefold-U+212A",
+      "mode": "text",
+      "value": "K@example.com",
+      "accepted": false
+    },
+    {
+      "name": "email-domain-casefold-U+212A",
+      "mode": "text",
+      "value": "a@K.example",
+      "accepted": false
+    },
+    {
+      "name": "text-公开token=announced",
+      "mode": "text",
+      "value": "公开token=announced",
+      "accepted": true
+    },
+    {
+      "name": "text-公开Bearer pending",
+      "mode": "text",
+      "value": "公开Bearer pending",
+      "accepted": true
+    },
+    {
+      "name": "text-公開message_key=demo",
+      "mode": "text",
+      "value": "公開message_key=demo",
+      "accepted": true
+    },
+    {
+      "name": "text-公開sk-abcdefghijklmnop",
+      "mode": "text",
+      "value": "公開sk-abcdefghijklmnop",
+      "accepted": true
+    },
+    {
+      "name": "text-²token=demo",
+      "mode": "text",
+      "value": "²token=demo",
+      "accepted": true
+    },
+    {
+      "name": "text-‿token=demo",
+      "mode": "text",
+      "value": "‿token=demo",
+      "accepted": false
+    },
+    {
+      "name": "text-́token=demo",
+      "mode": "text",
+      "value": "́token=demo",
+      "accepted": false
+    },
+    {
+      "name": "text-😀token=demo",
+      "mode": "text",
+      "value": "😀token=demo",
+      "accepted": false
+    },
+    {
+      "name": "text-𞓐token=demo",
+      "mode": "text",
+      "value": "𞓐token=demo",
+      "accepted": true
+    },
+    {
+      "name": "text-Ᲊtoken=demo",
+      "mode": "text",
+      "value": "Ᲊtoken=demo",
+      "accepted": false
+    },
+    {
+      "name": "text-sessıon=demo",
+      "mode": "text",
+      "value": "sessıon=demo",
+      "accepted": false
+    },
+    {
+      "name": "text-ſecret=demo",
+      "mode": "text",
+      "value": "ſecret=demo",
+      "accepted": false
+    },
+    {
+      "name": "text-toKen=demo",
+      "mode": "text",
+      "value": "toKen=demo",
+      "accepted": false
+    },
+    {
+      "name": "text-MİME-Version: 1.0",
+      "mode": "text",
+      "value": "MİME-Version: 1.0",
+      "accepted": false
+    },
+    {
+      "name": "text-Receıved: ok",
+      "mode": "text",
+      "value": "Receıved: ok",
+      "accepted": false
+    },
+    {
+      "name": "text-QQ group ıD: 12345",
+      "mode": "text",
+      "value": "QQ group ıD: 12345",
+      "accepted": false
+    },
+    {
+      "name": "text-ımap_uid=demo",
+      "mode": "text",
+      "value": "ımap_uid=demo",
+      "accepted": false
+    },
+    {
+      "name": "text-token=﻿",
+      "mode": "text",
+      "value": "token=﻿",
+      "accepted": false
+    },
+    {
+      "name": "text-token﻿=demo",
+      "mode": "text",
+      "value": "token﻿=demo",
+      "accepted": true
+    },
+    {
+      "name": "text-Bearer﻿demo",
+      "mode": "text",
+      "value": "Bearer﻿demo",
+      "accepted": true
+    },
+    {
+      "name": "text-QQ﻿account 12345",
+      "mode": "text",
+      "value": "QQ﻿account 12345",
+      "accepted": true
+    },
+    {
+      "name": "text-﻿MIME-Version: 1.0",
+      "mode": "text",
+      "value": "﻿MIME-Version: 1.0",
+      "accepted": true
+    },
+    {
+      "name": "text-ſk-abcdefghijklmnop",
+      "mode": "text",
+      "value": "ſk-abcdefghijklmnop",
+      "accepted": true
+    },
+    {
+      "name": "text-token=demo",
+      "mode": "text",
+      "value": "token=demo",
+      "accepted": false
+    },
+    {
+      "name": "text-Bearer demo",
+      "mode": "text",
+      "value": "Bearer demo",
+      "accepted": false
+    },
+    {
+      "name": "only-U+0009",
+      "mode": "text",
+      "value": "\t",
+      "accepted": false
+    },
+    {
+      "name": "URL-whitespace-U+0009",
+      "mode": "url",
+      "value": "https://example.com/a\tb",
+      "safe_url": false,
+      "source_id": "source-sha256:96d83a375baee82501356c68b3c0bf2133f902e74776e517d205f4e9da5a41ec",
+      "accepted": false
+    },
+    {
+      "name": "only-U+000A",
+      "mode": "text",
+      "value": "\n",
+      "accepted": false
+    },
+    {
+      "name": "URL-whitespace-U+000A",
+      "mode": "url",
+      "value": "https://example.com/a\nb",
+      "safe_url": false,
+      "source_id": "source-sha256:96d83a375baee82501356c68b3c0bf2133f902e74776e517d205f4e9da5a41ec",
+      "accepted": false
+    },
+    {
+      "name": "only-U+000B",
+      "mode": "text",
+      "value": "\u000b",
+      "accepted": false
+    },
+    {
+      "name": "URL-whitespace-U+000B",
+      "mode": "url",
+      "value": "https://example.com/a\u000bb",
+      "safe_url": false,
+      "source_id": "source-sha256:96d83a375baee82501356c68b3c0bf2133f902e74776e517d205f4e9da5a41ec",
+      "accepted": false
+    },
+    {
+      "name": "only-U+000C",
+      "mode": "text",
+      "value": "\f",
+      "accepted": false
+    },
+    {
+      "name": "URL-whitespace-U+000C",
+      "mode": "url",
+      "value": "https://example.com/a\fb",
+      "safe_url": false,
+      "source_id": "source-sha256:96d83a375baee82501356c68b3c0bf2133f902e74776e517d205f4e9da5a41ec",
+      "accepted": false
+    },
+    {
+      "name": "only-U+000D",
+      "mode": "text",
+      "value": "\r",
+      "accepted": false
+    },
+    {
+      "name": "URL-whitespace-U+000D",
+      "mode": "url",
+      "value": "https://example.com/a\rb",
+      "safe_url": false,
+      "source_id": "source-sha256:96d83a375baee82501356c68b3c0bf2133f902e74776e517d205f4e9da5a41ec",
+      "accepted": false
+    },
+    {
+      "name": "only-U+001C",
+      "mode": "text",
+      "value": "\u001c",
+      "accepted": false
+    },
+    {
+      "name": "URL-whitespace-U+001C",
+      "mode": "url",
+      "value": "https://example.com/a\u001cb",
+      "safe_url": false,
+      "source_id": "source-sha256:96d83a375baee82501356c68b3c0bf2133f902e74776e517d205f4e9da5a41ec",
+      "accepted": false
+    },
+    {
+      "name": "only-U+001D",
+      "mode": "text",
+      "value": "\u001d",
+      "accepted": false
+    },
+    {
+      "name": "URL-whitespace-U+001D",
+      "mode": "url",
+      "value": "https://example.com/a\u001db",
+      "safe_url": false,
+      "source_id": "source-sha256:96d83a375baee82501356c68b3c0bf2133f902e74776e517d205f4e9da5a41ec",
+      "accepted": false
+    },
+    {
+      "name": "only-U+001E",
+      "mode": "text",
+      "value": "\u001e",
+      "accepted": false
+    },
+    {
+      "name": "URL-whitespace-U+001E",
+      "mode": "url",
+      "value": "https://example.com/a\u001eb",
+      "safe_url": false,
+      "source_id": "source-sha256:96d83a375baee82501356c68b3c0bf2133f902e74776e517d205f4e9da5a41ec",
+      "accepted": false
+    },
+    {
+      "name": "only-U+001F",
+      "mode": "text",
+      "value": "\u001f",
+      "accepted": false
+    },
+    {
+      "name": "URL-whitespace-U+001F",
+      "mode": "url",
+      "value": "https://example.com/a\u001fb",
+      "safe_url": false,
+      "source_id": "source-sha256:96d83a375baee82501356c68b3c0bf2133f902e74776e517d205f4e9da5a41ec",
+      "accepted": false
+    },
+    {
+      "name": "only-U+0020",
+      "mode": "text",
+      "value": " ",
+      "accepted": false
+    },
+    {
+      "name": "URL-whitespace-U+0020",
+      "mode": "url",
+      "value": "https://example.com/a b",
+      "safe_url": false,
+      "source_id": "source-sha256:96d83a375baee82501356c68b3c0bf2133f902e74776e517d205f4e9da5a41ec",
+      "accepted": false
+    },
+    {
+      "name": "only-U+0085",
+      "mode": "text",
+      "value": "",
+      "accepted": false
+    },
+    {
+      "name": "URL-whitespace-U+0085",
+      "mode": "url",
+      "value": "https://example.com/ab",
+      "safe_url": false,
+      "source_id": "source-sha256:96d83a375baee82501356c68b3c0bf2133f902e74776e517d205f4e9da5a41ec",
+      "accepted": false
+    },
+    {
+      "name": "only-U+00A0",
+      "mode": "text",
+      "value": " ",
+      "accepted": false
+    },
+    {
+      "name": "URL-whitespace-U+00A0",
+      "mode": "url",
+      "value": "https://example.com/a b",
+      "safe_url": false,
+      "source_id": "source-sha256:96d83a375baee82501356c68b3c0bf2133f902e74776e517d205f4e9da5a41ec",
+      "accepted": false
+    },
+    {
+      "name": "only-U+1680",
+      "mode": "text",
+      "value": " ",
+      "accepted": false
+    },
+    {
+      "name": "URL-whitespace-U+1680",
+      "mode": "url",
+      "value": "https://example.com/a b",
+      "safe_url": false,
+      "source_id": "source-sha256:96d83a375baee82501356c68b3c0bf2133f902e74776e517d205f4e9da5a41ec",
+      "accepted": false
+    },
+    {
+      "name": "only-U+2000",
+      "mode": "text",
+      "value": " ",
+      "accepted": false
+    },
+    {
+      "name": "URL-whitespace-U+2000",
+      "mode": "url",
+      "value": "https://example.com/a b",
+      "safe_url": false,
+      "source_id": "source-sha256:96d83a375baee82501356c68b3c0bf2133f902e74776e517d205f4e9da5a41ec",
+      "accepted": false
+    },
+    {
+      "name": "only-U+2001",
+      "mode": "text",
+      "value": " ",
+      "accepted": false
+    },
+    {
+      "name": "URL-whitespace-U+2001",
+      "mode": "url",
+      "value": "https://example.com/a b",
+      "safe_url": false,
+      "source_id": "source-sha256:96d83a375baee82501356c68b3c0bf2133f902e74776e517d205f4e9da5a41ec",
+      "accepted": false
+    },
+    {
+      "name": "only-U+2002",
+      "mode": "text",
+      "value": " ",
+      "accepted": false
+    },
+    {
+      "name": "URL-whitespace-U+2002",
+      "mode": "url",
+      "value": "https://example.com/a b",
+      "safe_url": false,
+      "source_id": "source-sha256:96d83a375baee82501356c68b3c0bf2133f902e74776e517d205f4e9da5a41ec",
+      "accepted": false
+    },
+    {
+      "name": "only-U+2003",
+      "mode": "text",
+      "value": " ",
+      "accepted": false
+    },
+    {
+      "name": "URL-whitespace-U+2003",
+      "mode": "url",
+      "value": "https://example.com/a b",
+      "safe_url": false,
+      "source_id": "source-sha256:96d83a375baee82501356c68b3c0bf2133f902e74776e517d205f4e9da5a41ec",
+      "accepted": false
+    },
+    {
+      "name": "only-U+2004",
+      "mode": "text",
+      "value": " ",
+      "accepted": false
+    },
+    {
+      "name": "URL-whitespace-U+2004",
+      "mode": "url",
+      "value": "https://example.com/a b",
+      "safe_url": false,
+      "source_id": "source-sha256:96d83a375baee82501356c68b3c0bf2133f902e74776e517d205f4e9da5a41ec",
+      "accepted": false
+    },
+    {
+      "name": "only-U+2005",
+      "mode": "text",
+      "value": " ",
+      "accepted": false
+    },
+    {
+      "name": "URL-whitespace-U+2005",
+      "mode": "url",
+      "value": "https://example.com/a b",
+      "safe_url": false,
+      "source_id": "source-sha256:96d83a375baee82501356c68b3c0bf2133f902e74776e517d205f4e9da5a41ec",
+      "accepted": false
+    },
+    {
+      "name": "only-U+2006",
+      "mode": "text",
+      "value": " ",
+      "accepted": false
+    },
+    {
+      "name": "URL-whitespace-U+2006",
+      "mode": "url",
+      "value": "https://example.com/a b",
+      "safe_url": false,
+      "source_id": "source-sha256:96d83a375baee82501356c68b3c0bf2133f902e74776e517d205f4e9da5a41ec",
+      "accepted": false
+    },
+    {
+      "name": "only-U+2007",
+      "mode": "text",
+      "value": " ",
+      "accepted": false
+    },
+    {
+      "name": "URL-whitespace-U+2007",
+      "mode": "url",
+      "value": "https://example.com/a b",
+      "safe_url": false,
+      "source_id": "source-sha256:96d83a375baee82501356c68b3c0bf2133f902e74776e517d205f4e9da5a41ec",
+      "accepted": false
+    },
+    {
+      "name": "only-U+2008",
+      "mode": "text",
+      "value": " ",
+      "accepted": false
+    },
+    {
+      "name": "URL-whitespace-U+2008",
+      "mode": "url",
+      "value": "https://example.com/a b",
+      "safe_url": false,
+      "source_id": "source-sha256:96d83a375baee82501356c68b3c0bf2133f902e74776e517d205f4e9da5a41ec",
+      "accepted": false
+    },
+    {
+      "name": "only-U+2009",
+      "mode": "text",
+      "value": " ",
+      "accepted": false
+    },
+    {
+      "name": "URL-whitespace-U+2009",
+      "mode": "url",
+      "value": "https://example.com/a b",
+      "safe_url": false,
+      "source_id": "source-sha256:96d83a375baee82501356c68b3c0bf2133f902e74776e517d205f4e9da5a41ec",
+      "accepted": false
+    },
+    {
+      "name": "only-U+200A",
+      "mode": "text",
+      "value": " ",
+      "accepted": false
+    },
+    {
+      "name": "URL-whitespace-U+200A",
+      "mode": "url",
+      "value": "https://example.com/a b",
+      "safe_url": false,
+      "source_id": "source-sha256:96d83a375baee82501356c68b3c0bf2133f902e74776e517d205f4e9da5a41ec",
+      "accepted": false
+    },
+    {
+      "name": "only-U+2028",
+      "mode": "text",
+      "value": " ",
+      "accepted": false
+    },
+    {
+      "name": "URL-whitespace-U+2028",
+      "mode": "url",
+      "value": "https://example.com/a b",
+      "safe_url": false,
+      "source_id": "source-sha256:96d83a375baee82501356c68b3c0bf2133f902e74776e517d205f4e9da5a41ec",
+      "accepted": false
+    },
+    {
+      "name": "only-U+2029",
+      "mode": "text",
+      "value": " ",
+      "accepted": false
+    },
+    {
+      "name": "URL-whitespace-U+2029",
+      "mode": "url",
+      "value": "https://example.com/a b",
+      "safe_url": false,
+      "source_id": "source-sha256:96d83a375baee82501356c68b3c0bf2133f902e74776e517d205f4e9da5a41ec",
+      "accepted": false
+    },
+    {
+      "name": "only-U+202F",
+      "mode": "text",
+      "value": " ",
+      "accepted": false
+    },
+    {
+      "name": "URL-whitespace-U+202F",
+      "mode": "url",
+      "value": "https://example.com/a b",
+      "safe_url": false,
+      "source_id": "source-sha256:96d83a375baee82501356c68b3c0bf2133f902e74776e517d205f4e9da5a41ec",
+      "accepted": false
+    },
+    {
+      "name": "only-U+205F",
+      "mode": "text",
+      "value": " ",
+      "accepted": false
+    },
+    {
+      "name": "URL-whitespace-U+205F",
+      "mode": "url",
+      "value": "https://example.com/a b",
+      "safe_url": false,
+      "source_id": "source-sha256:96d83a375baee82501356c68b3c0bf2133f902e74776e517d205f4e9da5a41ec",
+      "accepted": false
+    },
+    {
+      "name": "only-U+3000",
+      "mode": "text",
+      "value": "　",
+      "accepted": false
+    },
+    {
+      "name": "URL-whitespace-U+3000",
+      "mode": "url",
+      "value": "https://example.com/a　b",
+      "safe_url": false,
+      "source_id": "source-sha256:96d83a375baee82501356c68b3c0bf2133f902e74776e517d205f4e9da5a41ec",
+      "accepted": false
+    },
+    {
+      "name": "only-U+200B",
+      "mode": "text",
+      "value": "​",
+      "accepted": true
+    },
+    {
+      "name": "URL-whitespace-U+200B",
+      "mode": "url",
+      "value": "https://example.com/a​b",
+      "safe_url": true,
+      "source_id": "source-sha256:bfd23d6b5821c67a85a5ba6a4477852a967e3ed09c699a0c5534e5db66514b5b",
+      "accepted": true
+    },
+    {
+      "name": "only-U+2060",
+      "mode": "text",
+      "value": "⁠",
+      "accepted": true
+    },
+    {
+      "name": "URL-whitespace-U+2060",
+      "mode": "url",
+      "value": "https://example.com/a⁠b",
+      "safe_url": true,
+      "source_id": "source-sha256:fd69a2b2628dc312753156753c51225ca20d5c18639800963561dda19d769353",
+      "accepted": true
+    },
+    {
+      "name": "only-U+FEFF",
+      "mode": "text",
+      "value": "﻿",
+      "accepted": true
+    },
+    {
+      "name": "URL-whitespace-U+FEFF",
+      "mode": "url",
+      "value": "https://example.com/a﻿b",
+      "safe_url": true,
+      "source_id": "source-sha256:8ec27637ab916ae49c899d8bd40162d723c628b4fbc6f097671650f6897e7af5",
+      "accepted": true
+    },
+    {
+      "name": "URL-FEFF-/﻿notice",
+      "mode": "url",
+      "value": "https://example.com/﻿notice",
+      "safe_url": true,
+      "source_id": "source-sha256:e082eb615d534df61dcb4c30af362af515f07cc0aa9c3b97173f305a3cc3fa9d",
+      "accepted": true
+    },
+    {
+      "name": "URL-FEFF-/notice?﻿value=yes",
+      "mode": "url",
+      "value": "https://example.com/notice?﻿value=yes",
+      "safe_url": true,
+      "source_id": "source-sha256:ef7c17f2952514866058cad8b4b68b88bc48eca5cb055e56c5b053440828c524",
+      "accepted": true
+    },
+    {
+      "name": "URL-FEFF-/notice#﻿fragment",
+      "mode": "url",
+      "value": "https://example.com/notice#﻿fragment",
+      "safe_url": true,
+      "source_id": "source-sha256:e7235eef9d0c78ef7a362fb8ee77b0fc3b97f6696aea281042ae209a450ffa1f",
+      "accepted": true
+    }
+  ]
+}

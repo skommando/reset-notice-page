@@ -1,0 +1,61 @@
+name: Validate and publish calendar
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    permissions:
+      contents: read
+      pages: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout reviewed public source
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+      - name: Set up Node
+        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f # v6.1.0
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - name: Test and validate public repository
+        run: |
+          node --test tests/model.test.mjs tests/validate-public.test.mjs
+          node scripts/validate-public.mjs
+      - name: Read Pages configuration
+        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
+      - name: Create and validate fixed site package
+        run: |
+          mkdir -p "$RUNNER_TEMP/calendar-site"
+          cp index.html CNAME "$RUNNER_TEMP/calendar-site/"
+          cp -R assets data "$RUNNER_TEMP/calendar-site/"
+          node scripts/validate-public.mjs --artifact "$RUNNER_TEMP/calendar-site"
+      - name: Upload only the validated site package
+        uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4.0.0
+        with:
+          path: ${{ runner.temp }}/calendar-site
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy validated artifact
+        id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
