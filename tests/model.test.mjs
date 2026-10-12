@@ -107,7 +107,7 @@ test('UI assets preserve approved layout, unknown filter and secure DOM-only ren
  const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
  const app=readFileSync(new URL('../assets/app.mjs',import.meta.url),'utf8');
  const css=readFileSync(new URL('../assets/styles.css',import.meta.url),'utf8');
- assert.match(html,/每一次重置，都有迹可循/);
+ assert.match(html,/<h1>减额不是代表你的错，重置不是唯一的结果<\/h1>/);
  assert.match(html,/<option value="unknown">状态待核实<\/option>/);
  assert.match(html,/assets\/app.mjs/);
  assert.match(app,/fetch\('\.\/data\/calendar\.json'/);
