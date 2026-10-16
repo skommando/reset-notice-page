@@ -129,3 +129,42 @@ test('banked reset card states announced versus completed without inventing issu
  day.reset.status='announced';day.reset.completion_source_url=null;
  assert.doesNotMatch(note(make(day,3)),/已发放/);assert.match(note(make(day,3)),/待确认/);
 });
+
+test('challenge heading shows highest published day, including gaps and empty data',async()=>{
+ const {runInNewContext}=await import('node:vm');
+ const {CHALLENGE_FALLBACK,validateChallenge}=await import('../assets/model.mjs');
+ const source=readFileSync(join(root,'assets/app.mjs'),'utf8');
+ const render=source.slice(source.indexOf('function renderChallenge('),source.indexOf('\nrenderChallenge(true);'));
+ for(const [numbers,expected] of [[[1,11],'已更新至第 11 / 28 天'],[[1,3],'已更新至第 3 / 28 天'],[[28],'已更新至第 28 / 28 天'],[[],'尚未开始 / 28 天']]){
+  const challenge=structuredClone(CHALLENGE_FALLBACK);
+  challenge.days=numbers.map((number,i)=>({...structuredClone(CHALLENGE_FALLBACK.days[i]),day:number}));
+  validateChallenge(challenge);
+  const elements=Object.fromEntries(['challengegrid','challengestatus','challengeprogress'].map(id=>[id,{textContent:'',replaceChildren(){}}]));
+  runInNewContext(render+';renderChallenge(false);',{challenge,$:id=>elements[id],challengeCard:()=>null,refreshElapsed:()=>{}});
+  assert.equal(elements.challengeprogress.textContent,expected);
+ }
+ const html=readFileSync(join(root,'index.html'),'utf8');
+ assert.match(html,/<h2 id="challengetitle">28 天挑战<\/h2><span id="challengeprogress"/);
+});
+
+test('loaded calendar hides only the redundant total status and preserves empty/error notices',async()=>{
+ const {runInNewContext}=await import('node:vm');
+ const source=readFileSync(join(root,'assets/app.mjs'),'utf8');
+ const load=source.slice(source.indexOf('async function load('),source.indexOf('\nload();'));
+ for(const count of [18,0,-1]){
+  const elements={loadstatus:{hidden:false,textContent:'正在读取公开数据…',classList:{add(){}}},dashboard:{hidden:true}};
+  await runInNewContext(load+';load();',{$:id=>elements[id],fetch:async()=>({ok:count>=0,text:async()=>'{}'}),validateCalendar:x=>x,parseCalendarJSON:JSON.parse,announcementRecords:()=>Array.from({length:count},()=>({date:'2026-10-15'})),today:()=>'2026-10-16',setup(){},render(){}});
+  assert.equal(elements.loadstatus.hidden,count>0);
+  assert.equal(elements.loadstatus.textContent,count>0?'':count===0?'暂无收录推文。':'数据暂不可用，请稍后刷新。');
+  assert.equal(elements.dashboard.hidden,count<0);
+ }
+});
+
+test('reset timer is a prominent responsive card with a distinct small basis',()=>{
+ const css=readFileSync(join(root,'assets/styles.css'),'utf8');
+ const html=readFileSync(join(root,'index.html'),'utf8');
+ assert.match(css,/\.resetclock\{[^}]*background:#173f39/);
+ assert.match(css,/\.resetclock strong\{[^}]*font-size:clamp\(52px,7vw,88px\)/);
+ assert.match(css,/\.resetclock \.minor\{[^}]*font-size:12px/);
+ assert.match(html,/id="elapsedbasis" class="minor"/);
+});

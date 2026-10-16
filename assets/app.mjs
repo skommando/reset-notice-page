@@ -76,10 +76,11 @@ async function load(){
   const data=validateCalendar(parseCalendarJSON(await response.text()));records=announcementRecords(data);
   const dates=[...new Set(records.map(r=>r.date))].sort(),current=today();selected=dates.filter(d=>d<=current).at(-1)??dates[0]??current;
   year=Number(selected.slice(0,4));month=Number(selected.slice(5,7))-1;
-  $('loadstatus').textContent=records.length?`${records.length} 篇推文 · 点击日期查看原文`:'暂无收录推文。';
+  $('loadstatus').textContent=records.length?'':'暂无收录推文。';
+  $('loadstatus').hidden=records.length>0;
   setup();render();$('dashboard').hidden=false;
  }catch{
-  $('dashboard').hidden=true;$('loadstatus').classList.add('error');$('loadstatus').textContent='数据暂不可用，请稍后刷新。';
+  $('dashboard').hidden=true;$('loadstatus').hidden=false;$('loadstatus').classList.add('error');$('loadstatus').textContent='数据暂不可用，请稍后刷新。';
  }
 }
 load();
@@ -110,6 +111,8 @@ function challengeCard(day,number){
  return card;
 }
 function renderChallenge(fallback){
+ const currentDay=Math.max(0,...challenge.days.map(day=>day.day));
+ $('challengeprogress').textContent=currentDay?`已更新至第 ${currentDay} / 28 天`:'尚未开始 / 28 天';
  const byDay=new Map(challenge.days.map(day=>[day.day,day]));
  $('challengegrid').replaceChildren(...Array.from({length:28},(_,i)=>challengeCard(byDay.get(i+1),i+1)));
  const date=new Date(Date.parse(challenge.updated_at)+8*3600000).toISOString().slice(0,16).replace('T',' ');
