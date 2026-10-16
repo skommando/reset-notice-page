@@ -56,7 +56,7 @@ function details(){
 function render(){
  const focusedDate=document.activeElement?.dataset.date;
  $('period').textContent=view==='month'?`${year} 年 ${pad(month+1)} 月`:`${year} 年 · 全年概览`;
- $('currentmonth').textContent=`${records.filter(r=>r.date.startsWith(key(year,month,1).slice(0,7))).length} 篇推文 · ${year} 年 ${pad(month+1)} 月`;
+ $('currentmonth').textContent=`${year} 年 ${pad(month+1)} 月`;
  $('monthview').setAttribute('aria-pressed',String(view==='month'));$('yearview').setAttribute('aria-pressed',String(view==='year'));
  $('month').hidden=view!=='month';$('year').hidden=view!=='year';
  $('prev').setAttribute('aria-label',view==='month'?'上一月':'上一年');$('next').setAttribute('aria-label',view==='month'?'下一月':'下一年');

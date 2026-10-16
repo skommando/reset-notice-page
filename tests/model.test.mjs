@@ -282,6 +282,14 @@ test('always-visible tweet text preserves multiline layout and wraps long tokens
  assert.doesNotMatch(app,/source\.text\.(?:slice|substring|replace)|node\('details'/);
 });
 
+test('month badge shows only the selected month while daily tweet counts remain',()=>{
+ const app=readFileSync(new URL('../assets/app.mjs',import.meta.url),'utf8');
+ const badge=app.split('\n').find(line=>line.includes("$('currentmonth').textContent="));
+ assert.equal(badge.trim(),"$('currentmonth').textContent=`${year} 年 ${pad(month+1)} 月`;");
+ assert.match(app,/node\('span','planlabel',`\$\{count\} 篇推文`\)/);
+ assert.match(app,/\$\('detailcaption'\)\.textContent=`\$\{entries\.length\} 篇推文`/);
+});
+
 // Challenge contract: explicit days and provenance, independent of mail/calendar.
 const challengeModel=await import('../assets/model.mjs');
 test('challenge exports a validated dated fallback with eleven researched days',()=>{
