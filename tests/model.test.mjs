@@ -73,8 +73,12 @@ test('confirmation gate is independently association, status and executed_at',()
  assert.equal(monthStats(data,'2026-10').confirmed_resets,0);
  assert.equal(monthStats(data,'2026-10').pending_events,1);
 });
-test('true empty production data validates and stays empty',()=>{
- const data=JSON.parse(readFileSync(new URL('../data/calendar.json',import.meta.url)));
+function emptyData(){return {...copy(fixture),checked_at_range:{min:null,max:null},coverage:{protocol_versions:[],notes:[]},events:[],sources:[],unlinked_sources:[]};}
+test('checked-in production data validates without assuming an empty history',()=>{
+ validateCalendar(parseCalendarJSON(readFileSync(new URL('../data/calendar.json',import.meta.url),'utf8')));
+});
+test('true empty data validates and stays empty',()=>{
+ const data=emptyData();
  validateCalendar(data); assert.deepEqual(calendarRecords(data),[]);
  assert.deepEqual(monthStats(data,'2026-10'),{confirmed_resets:0,confirmed_dates:0,associated_sources:0,unlinked_sources:0,pending_events:0});
 });
@@ -187,4 +191,85 @@ for(const suffix of [
  const url='https://example.com/notice/1'+suffix,data=nullTextURLData(url),before=JSON.stringify(data);
  assert.equal(safeSourceURL(url),true);assert.equal(validateCalendar(data),data);
  assert.equal(data.sources[0].url,url);assert.equal(JSON.stringify(data),before);
+});
+
+function publishedSource(n, value, basis='verified') {
+ const s=source(n); s.published_at=date(value);s.publication_basis=basis;
+ s.verification=verification(...(basis==='verified'?[]:['published_at']));
+ Object.assign(s.versions[0],{published_at:s.published_at,publication_basis:basis,verification:copy(s.verification)});
+ return s;
+}
+test('announcement date is browsable without inventing an execution date',()=>{
+ const s=publishedSource(123,'2025-12-31T23:59+08:00');
+ s.text='Full first line.\nFull second line.';s.versions[0].text=s.text;
+ const data=dataset([event(1,{source_ids:[s.id],executed_at:null,display_date:null,display_basis:null,verification:verification('executed_at')})],[s]);
+ validateCalendar(data);
+ const entries=dayDetails(data,'2025-12-31');
+ assert.equal(entries.length,1);assert.equal(entries[0].type,'announcement');
+ assert.equal(entries[0].basis,'published_at');assert.equal(entries[0].countable,false);
+ assert.equal(entries[0].sources[0].text,s.text);assert.equal(entries[0].related_events[0].executed_at,null);
+ assert.equal(monthStats(data,'2025-12').confirmed_resets,0);assert.equal(monthStats(data,'2025-12').confirmed_dates,0);
+ assert.equal(monthStats(data,'2025-12').pending_events,1);
+});
+test('shared source has one announcement and execution counts remain in execution month',()=>{
+ const s=publishedSource(123,'2026-09-30');
+ const data=dataset([event(1,{source_ids:[s.id]}),event(2,{source_ids:[s.id],reset_kind:'banked'})],[s]);
+ validateCalendar(data);
+ assert.equal(dayDetails(data,'2026-09-30').length,1);
+ assert.equal(dayDetails(data,'2026-09-30',{kind:'banked',status:'confirmed'}).length,1);
+ assert.equal(dayDetails(data,'2026-09-30',{kind:'forced',status:'cancelled'}).length,0);
+ assert.equal(monthStats(data,'2026-09').confirmed_resets,0);
+ assert.equal(monthStats(data,'2026-10').confirmed_resets,2);
+ assert.equal(monthStats(data,'2026-10').confirmed_dates,1);
+});
+test('ID inferred publication is information only and unknown publication stays undated',()=>{
+ const a=publishedSource(123,'2026-09-01T12:34:56+08:00','id_inferred'),b=source(124);
+ const data=dataset([], [a,b], [a,b].map(s=>({source_id:s.id,mentioned_at:null,display_date:null,display_basis:'mentioned'})));
+ validateCalendar(data);
+ const entries=dayDetails(data,'2026-09-01');assert.equal(entries.length,1);
+ assert.equal(entries[0].sources[0].publication_basis,'id_inferred');assert.equal(entries[0].countable,false);
+ assert.equal(dayDetails(data,'2026-10-07').length,0,'checked date must not become publication date');
+ assert.equal(monthStats(data,'2026-09').unlinked_sources,2);
+ assert.equal(calendarRecords(data).filter(r=>r.pending).length,2);
+});
+test('announcement UI identifies publication separately and does not duplicate pending records',()=>{
+ const app=readFileSync(new URL('../assets/app.mjs',import.meta.url),'utf8');
+ assert.match(app,/公告发布时间/);assert.match(app,/公告日期不代表执行日期/);
+ assert.match(app,/r\.type!=='announcement'/);
+});
+
+test('initial history selection opens latest available past date instead of an empty today',async()=>{
+ const {initialBrowseDate}=await import('../assets/model.mjs');
+ assert.equal(typeof initialBrowseDate,'function');
+ const s=publishedSource(123,'2026-10-15T14:28+08:00');
+ const data=dataset([], [s], [{source_id:s.id,mentioned_at:null,display_date:null,display_basis:'mentioned'}]);
+ assert.equal(initialBrowseDate(data,'2026-10-16'),'2026-10-15');
+ assert.equal(initialBrowseDate(data,'2026-10-14'),'2026-10-15');
+ const empty=emptyData();
+ assert.equal(initialBrowseDate(empty,'2026-10-16'),'2026-10-16');
+});
+
+test('optional Chinese summary is separate from missing original and supports Unicode limits',()=>{
+ const data=copy(fixture),s=data.sources[0];s.summary_zh='历史公告摘要，原文未收录。';
+ s.text=null;s.text_completeness='unavailable';s.verification=verification('published_at','text','text_completeness');
+ Object.assign(s.versions[0],{text:null,text_completeness:'unavailable',verification:copy(s.verification)});
+ assert.equal(validateCalendar(data),data);
+ s.summary_zh='😀'.repeat(1000);assert.equal(validateCalendar(data),data);
+ for(const value of ['', ' ', '😀'.repeat(1001), '摘要\n下一行','摘要\u007f',null,123]){
+  s.summary_zh=value;assert.throws(()=>validateCalendar(data));
+ }
+});
+test('mirror reported publication remains pending evidence and gets a distinct UI label',()=>{
+ const s=publishedSource(123,'2026-10-15T14:28+08:00','mirror_reported');
+ const data=dataset([], [s], [{source_id:s.id,mentioned_at:null,display_date:null,display_basis:'mentioned'}]);
+ assert.equal(validateCalendar(data),data);
+ assert.equal(dayDetails(data,'2026-10-15')[0].countable,false);
+ const app=readFileSync(new URL('../assets/app.mjs',import.meta.url),'utf8');
+ assert.match(app,/第三方镜像报告，非 X 核实/);assert.match(app,/summary_zh/);assert.match(app,/原文未收录/);
+});
+
+test('source statistic copy explicitly excludes the independent publication layer',()=>{
+ const app=readFileSync(new URL('../assets/app.mjs',import.meta.url),'utf8');
+ assert.match(app,/执行 \/ 计划 \/ 来源所述日期的唯一来源/);
+ assert.doesNotMatch(app,/所有有日期记录的唯一来源/);
 });

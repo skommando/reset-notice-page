@@ -10,7 +10,11 @@ const FIELDS = {
 const VERIFY={event:['association','reset_kind','status','executed_at','planned_at','previous_planned_at','eligibility_summary'],source:['association','revision','text','published_at','text_completeness'],version:['revision','text','published_at','text_completeness']};
 const fail=()=>{throw new Error('public_data_invalid');};
 function require(value){if(!value)fail();}
-function exact(value,kind){require(value!==null&&typeof value==='object'&&!Array.isArray(value)&&canonical(Object.keys(value).sort())===canonical([...FIELDS[kind]].sort()));}
+function exact(value,kind){
+ require(value!==null&&typeof value==='object'&&!Array.isArray(value));
+ const optional=kind==='source'&&Object.hasOwn(value,'summary_zh')?['summary_zh']:[];
+ require(canonical(Object.keys(value).sort())===canonical([...FIELDS[kind],...optional].sort()));
+}
 function enumValue(value,values){require(typeof value==='string'&&values.includes(value));}
 function text(value,nullable=false){require(nullable&&value===null||typeof value==='string'&&!PYTHON_ONLY_WHITESPACE.test(value));}
 function codePointOrder(a,b){const x=[...a],y=[...b];for(let i=0;i<Math.min(x.length,y.length);i++){const delta=x[i].codePointAt(0)-y[i].codePointAt(0);if(delta)return delta;}return x.length-y.length;}
@@ -268,7 +272,7 @@ function verification(value,kind){
  require(value.fields.every(f=>VERIFY[kind].includes(f)));require((value.state==='verified')===(value.fields.length===0));
 }
 function version(value){
- text(value.text,true);temporal(value.published_at);enumValue(value.publication_basis,['verified','id_inferred','unknown']);enumValue(value.text_completeness,['complete','unknown','unavailable']);
+ text(value.text,true);temporal(value.published_at);enumValue(value.publication_basis,['verified','id_inferred','mirror_reported','unknown']);enumValue(value.text_completeness,['complete','unknown','unavailable']);
  require((value.published_at===null)===(value.publication_basis==='unknown'));require(value.text!==null||value.text_completeness==='unavailable');
  const fields=value.verification.fields;
  if(value.text===null)require(fields.includes('text'));
@@ -286,7 +290,7 @@ export function validateCalendar(data){
  for(const key of ['events','sources','unlinked_sources'])require(Array.isArray(data[key]));
  const sourceIds=[];
  for(const source of data.sources){
-  exact(source,'source');require(typeof source.id==='string'&&/^source-sha256:[0-9a-f]{64}$/.test(source.id));require(safeSourceURL(source.url));
+  exact(source,'source');if(Object.hasOwn(source,'summary_zh')){text(source.summary_zh);require([...source.summary_zh].length<=1000&&!/\p{Cc}/u.test(source.summary_zh));}require(typeof source.id==='string'&&/^source-sha256:[0-9a-f]{64}$/.test(source.id));require(safeSourceURL(source.url));
   require(source.id==='source-sha256:'+sha256(sourceKey(source.url)));sourceIds.push(source.id);
   verification(source.verification,'source');version(source);require(Array.isArray(source.versions)&&source.versions.length>0);
   for(const v of source.versions){exact(v,'version');verification(v.verification,'version');version(v);}
@@ -330,8 +334,25 @@ export function monthStats(data,month){
  const records=calendarRecords(data),inMonth=records.filter(r=>r.date?.startsWith(month+'-')),confirmed=inMonth.filter(r=>r.countable);
  return {confirmed_resets:new Set(confirmed.map(r=>r.id)).size,confirmed_dates:new Set(confirmed.map(r=>r.date)).size,associated_sources:new Set(inMonth.flatMap(r=>r.source_ids)).size,unlinked_sources:data.unlinked_sources.length,pending_events:records.filter(r=>r.type==='event'&&r.pending).length};
 }
-export function filterRecords(records,{kind='all',status='all'}={}){return records.filter(r=>(kind==='all'||r.kind===kind)&&(status==='all'||r.status===status));}
-export function dayDetails(data,date,filters={}){validDate(date,false);return filterRecords(calendarRecords(data),filters).filter(r=>r.date===date);}
+// Publication is a separate information layer, never an execution-date fallback.
+export function announcementRecords(data){
+ return data.sources.filter(s=>s.published_at!==null).map(s=>({
+  type:'announcement',id:'announcement:'+s.id,kind:'unknown',status:'unknown',
+  date:s.published_at.value.slice(0,10),basis:'published_at',countable:false,pending:false,
+  sources:[s],source_ids:[s.id],related_events:data.events.filter(e=>e.source_ids.includes(s.id)),
+ }));
+}
+export function browseRecords(data){return [...calendarRecords(data),...announcementRecords(data)];}
+export function initialBrowseDate(data,today){
+ validDate(today,false);
+ const dates=[...new Set(browseRecords(data).map(r=>r.date).filter(Boolean))].sort();
+ return dates.filter(d=>d<=today).at(-1)??dates[0]??today;
+}
+export function filterRecords(records,{kind='all',status='all'}={}){
+ const matches=(k,s)=>(kind==='all'||k===kind)&&(status==='all'||s===status);
+ return records.filter(r=>r.type==='announcement'&&r.related_events.length?r.related_events.some(e=>matches(e.reset_kind,e.status)):matches(r.kind,r.status));
+}
+export function dayDetails(data,date,filters={}){validDate(date,false);return filterRecords(browseRecords(data),filters).filter(r=>r.date===date);}
 // JSON.parse 会静默接受重复键；加载入口先用严格递归解析拒绝重复键和非有限数。
 export function parseCalendarJSON(input){
  require(typeof input==='string');let pos=0;
