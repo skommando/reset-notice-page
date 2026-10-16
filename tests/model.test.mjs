@@ -281,3 +281,61 @@ test('always-visible tweet text preserves multiline layout and wraps long tokens
  assert.match(app,/article\.append\(node\('p','posttext',source\.text\)\)/);
  assert.doesNotMatch(app,/source\.text\.(?:slice|substring|replace)|node\('details'/);
 });
+
+// Challenge contract: explicit days and provenance, independent of mail/calendar.
+const challengeModel=await import('../assets/model.mjs');
+test('challenge exports a validated dated fallback with eleven researched days',()=>{
+ assert.equal(typeof challengeModel.validateChallenge,'function');
+ const data=challengeModel.validateChallenge(copy(challengeModel.CHALLENGE_FALLBACK));
+ assert.equal(data.days.length,11);assert.deepEqual(data.days.map(d=>d.day),Array.from({length:11},(_,i)=>i+1));
+ assert.equal(data.days[2].reset.kind,'banked_reset_grant');
+});
+test('latest reset identity precedes execution-time preference and excludes banked grants',()=>{
+ const data=copy(challengeModel.CHALLENGE_FALLBACK);
+ assert.equal(typeof challengeModel.latestReset,'function');
+ const latest=challengeModel.latestReset(data);
+ assert.equal(latest.day,10);assert.equal(latest.at,'2026-10-15T06:28:13.000Z');assert.equal(latest.basis,'completion_post');
+ data.days[1].reset.executed_at='2026-10-07T03:30:00.000Z';
+ assert.equal(challengeModel.latestReset(data).day,10,'older precisely timed reset must not replace newest identity');
+ const d=data.days[9];d.reset.executed_at='2026-10-15T06:20:00.000Z';d.reset.execution_source_url=d.reset.completion_source_url;
+ assert.equal(challengeModel.latestReset(data).basis,'executed');
+});
+test('elapsed hours keeps one decimal and rejects future or absent anchors',()=>{
+ assert.equal(typeof challengeModel.elapsedHours,'function');
+ const now=Date.parse('2026-10-16T08:00:00Z');
+ assert.equal(challengeModel.elapsedHours({at:'2026-10-15T06:28:13.000Z'},now),'25.5');
+ assert.equal(challengeModel.elapsedHours({at:'2026-10-17T00:00:00Z'},now),null);
+ assert.equal(challengeModel.elapsedHours(null,now),null);
+});
+for(const [name,change] of [
+ ['extra key',d=>d.secret='private'],['duplicate day',d=>d.days.push(copy(d.days[0]))],
+ ['day outside range',d=>d.days[0].day=29],['unsafe source',d=>d.days[0].sources[0].url+='?token=secret'],
+ ['invalid date',d=>d.updated_at='2026-02-30T00:00:00.000Z'],
+ ['unlinked completion',d=>d.days[9].reset.completion_source_url=d.days[0].sources[0].url],
+ ['invented execution evidence',d=>d.days[9].reset.executed_at='2026-10-15T06:00:00.000Z'],
+ ['private nested field',d=>d.days[0].sources[0].raw_email='private'],
+ ['future source',d=>d.days[0].sources[0].published_at='2099-01-01T00:00:00.000Z'],
+ ['unsafe text',d=>d.days[0].summary_zh='<script>alert(1)</script>'],
+ ['unlinked improvement',d=>d.days[0].improvements[0].source_urls=['https://x.com/thsottiaux/status/999']],
+])test('challenge rejects '+name,()=>{
+ assert.equal(typeof challengeModel.validateChallenge,'function');
+ const data=copy(challengeModel.CHALLENGE_FALLBACK);change(data);assert.throws(()=>challengeModel.validateChallenge(data));
+});
+test('remote challenge load uses fixed URL, refuses older data, and falls back on timeout/bad response',async()=>{
+ assert.equal(typeof challengeModel.loadChallenge,'function');
+ const fallback=challengeModel.CHALLENGE_FALLBACK;
+ let requested;
+ const valid=await challengeModel.loadChallenge(async(url,opts)=>{requested={url,opts};return {ok:true,text:async()=>JSON.stringify(fallback)};});
+ assert.equal(requested.url,'https://raw.githubusercontent.com/skommando/reset-notice-page/refs/heads/challenge-data/data/challenge.json');
+ assert.equal(requested.opts.credentials,'omit');assert.ok(requested.opts.signal);assert.equal(valid.fallback,false);
+ const older=copy(fallback);older.updated_at='2026-10-16T08:32:00.000Z';
+ assert.equal((await challengeModel.loadChallenge(async()=>({ok:true,text:async()=>JSON.stringify(older)}))).fallback,true);
+ assert.equal((await challengeModel.loadChallenge(async()=>({ok:false}))).fallback,true);
+ assert.equal((await challengeModel.loadChallenge(async()=>({ok:true,text:async()=>'{"schema_version":1,"schema_version":1}'}))).fallback,true);
+ assert.equal((await challengeModel.loadChallenge(()=>new Promise(()=>{}),{timeoutMs:5})).fallback,true);
+});
+
+for(const unsafe of ['\u202e','\ud800'])test('challenge text rejects unsafe Unicode '+JSON.stringify(unsafe),()=>{
+ const data=copy(challengeModel.CHALLENGE_FALLBACK);data.days[0].summary_zh+='测试'+unsafe;
+ assert.throws(()=>challengeModel.validateChallenge(parseCalendarJSON(JSON.stringify(data))));
+});

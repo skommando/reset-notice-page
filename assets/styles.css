@@ -212,3 +212,27 @@ button,select{min-height:36px}
 
 /* Tweet bodies remain multiline and readable outside the old disclosure wrapper. */
 .posttext { white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* Compact challenge notes retain the original calendar and expanded tweets. */
+.resetclock{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:0 0 22px;color:var(--muted);font-size:13px}
+.resetclock strong{font-size:30px;letter-spacing:-1px;color:var(--ink);font-variant-numeric:tabular-nums}
+.resetclock a{color:inherit;text-underline-offset:3px}
+.challenge{margin-top:26px;overflow:hidden}
+.challenge .panelhead{gap:16px;flex-wrap:wrap}
+.challengeintro,.challengefoot{padding:0 22px 18px;margin:0;color:var(--muted);font-size:12px;line-height:1.8}
+.challengegrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:0 22px 22px}
+.challengecard{border:1px solid var(--line);border-radius:10px;padding:16px;min-width:0;background:#fcfcf7;overflow-wrap:anywhere}
+.challengetop{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:10px}
+.daynumber{font-size:10px;letter-spacing:1.2px;color:var(--muted);font-weight:700}
+.challengecard h3{font-size:15px;line-height:1.5;margin:0 0 9px}
+.challengesummary{font-size:12px;line-height:1.8;margin:0}
+.improvements{font-size:11px;color:var(--muted);line-height:1.8;padding-left:16px;margin:10px 0}
+.resetday{border-color:#c6c5a5;background:#f1f2e5}
+.resetbadge{font-size:9px;letter-spacing:.5px;color:#535a32;background:#e2e7cd;border-radius:4px;padding:4px 6px;font-weight:700}
+.bankednote{font-size:10px;line-height:1.7;color:#646743;margin:10px 0 0}
+.challengelinks{display:flex;gap:8px 12px;flex-wrap:wrap;margin-top:12px}
+.challengelinks a{font-size:10px;color:var(--muted);text-underline-offset:3px}
+.upcoming{background:transparent;padding:12px 16px;opacity:.65}
+.upcoming .challengetop{margin-bottom:4px}.upcoming h3{font-size:12px;font-weight:400;margin:0}
+@media(max-width:960px){.challengegrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.challengegrid{grid-template-columns:1fr;padding:0 16px 16px}.challengeintro,.challengefoot{padding-left:16px;padding-right:16px}.challengecard{padding:16px}.challengelinks a{display:inline-flex;align-items:center;min-height:36px}.resetclock strong{font-size:26px}.resetclock{gap:8px}.challenge .panelhead{align-items:flex-start}}

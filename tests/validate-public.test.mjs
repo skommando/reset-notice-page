@@ -103,3 +103,29 @@ for(const suffix of ['?access_token=SYNTHETIC_REVIEW_ONLY','?%61ccess%5Ftoken=SY
   assert.doesNotMatch(repositoryResult.stderr,/SYNTHETIC_REVIEW_ONLY/);assert.deepEqual(readFileSync(file),before);
  });
 }
+
+test('challenge UI preserves tweet layout and adds independent timer and 28-day section',()=>{
+ const html=readFileSync(join(root,'index.html'),'utf8'),app=readFileSync(join(root,'assets/app.mjs'),'utf8');
+ assert.match(html,/减额不是代表你的错，重置不是唯一的结果/);assert.match(html,/站起来蹬。/);
+ assert.match(html,/id="elapsed"/);assert.match(html,/id="challengegrid"/);
+ assert.ok(html.indexOf('id="challengegrid"')>html.indexOf('id="detail"'));
+ assert.match(app,/visibilitychange/);assert.match(app,/60000/);assert.match(app,/loadChallenge/);
+ assert.doesNotMatch(app,/innerHTML/);assert.match(app,/按完成公告计算/);
+});
+test('public validator validates packaged challenge fallback without new artifact paths',()=>{
+ const scriptText=readFileSync(script,'utf8');assert.match(scriptText,/validateChallenge\(CHALLENGE_FALLBACK\)/);
+});
+
+test('banked reset card states announced versus completed without inventing issuance',async()=>{
+ const {runInNewContext}=await import('node:vm');
+ const {CHALLENGE_FALLBACK}=await import('../assets/model.mjs');
+ const source=readFileSync(join(root,'assets/app.mjs'),'utf8');
+ const cardFunction=source.slice(source.indexOf('function challengeCard('),source.indexOf('function renderChallenge('));
+ const node=(tag,className,text)=>({tag,className,text,children:[],append(...children){this.children.push(...children);}});
+ const make=runInNewContext(cardFunction+'; challengeCard',{node});
+ const day=structuredClone(CHALLENGE_FALLBACK.days[2]);
+ const note=card=>card.children.find(child=>child.className==='bankednote').text;
+ assert.match(note(make(day,3)),/已发放/);
+ day.reset.status='announced';day.reset.completion_source_url=null;
+ assert.doesNotMatch(note(make(day,3)),/已发放/);assert.match(note(make(day,3)),/待确认/);
+});

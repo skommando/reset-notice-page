@@ -51,3 +51,23 @@ URL 还会按 query 与带赋值的 OAuth/路由 fragment 参数名阻断 access
 ## 可选公开摘要与镜像时间
 
 来源可附带独立的 `summary_zh`：非空、最多 1000 个 Unicode 码点且无控制字符。它只显示为“摘要”，绝不填入原文或改变完整性。`publication_basis: "mirror_reported"` 在数据层表示第三方镜像报告，必须保留发布时间待核实字段；推文界面不显示这些元数据，也不宣称 X 官方核实。旧版不含摘要的 schema v1 文件仍有效。
+
+## 28 天挑战与经过小时
+
+主分支仍为原来的 13 个公开仓库文件、6 个站点文件，邮箱协议与 `data/calendar.json` 不变。挑战数据单独存于同仓库 `challenge-data` 分支的 `data/challenge.json`；固定读取地址为 https://raw.githubusercontent.com/skommando/reset-notice-page/refs/heads/challenge-data/data/challenge.json 。该分支不会触发仅监听 main 的 Pages workflow，也不进入 VPS 日历发布器检出。
+
+`assets/model.mjs` 内保存经过同一校验器验证的初始公开快照。浏览器立即显示快照，最多等待远端 6 秒；失败、错误结构、过旧版本或未来版本退回有日期标注的快照。远端不能提供任意地址或代码，所有内容使用 `textContent`。更新日期表示资料核对时刻，不是执行时间。浏览器按分钟更新经过小时，恢复可见时立即重算；未来锚点不显示为零。
+
+挑战契约版本为 1，根字段严格固定为 `schema_version, updated_at, pledge_url, days`。时间为 UTC 毫秒 ISO 格式；日期有真实日历校验。days 按显式 Day 编号递增，不得重复或超出 1–28；缺少的编号只显示“待发布”，不推算日期或改进。每一天包含 title_zh、summary_zh、improvements、sources、reset；改进与完成事实必须关联同一天的来源，链接仅允许作者的规范 X 状态 URL。source 的 time_basis 保留 mirror_reported / id_inferred / verified，role 为 announcement / completion / execution。reset 为 null，或包含 kind、status、completion_source_url、executed_at、execution_source_url 的完整对象；无执行时间时后二者必须均为 null。completed 必须对应 completion 来源；新增实际执行时间必须先核实原帖明确陈述了该时间及精度，单有合法 JSON 不代表事实已经核实。
+
+经过小时先按完成公告时刻选取最近一轮已完成的用量重置，再优先使用该轮有证据的实际执行时间，否则按完成公告计算。预存重置发放不进入此计时。当前最近一轮为 Day 10，完成公告时间为 2026-10-15T06:28:13.000Z，实际执行时间未知，界面标注“按完成公告计算”。
+
+后续维护：既有助手任务确认 reset 通知邮件 SENT 后核对公开资料，仅在该数据分支提交经过 validateChallenge / parseCalendarJSON 校验的 JSON；不改变通知判定、NOTICE_DATA_V1 或把任意邮件 JSON 直接公开。发布时先重读数据分支当前 HEAD，以固定父提交普通更新，冲突时重新核对；不强推。初次 main 前端代码上线仍需受控同步 VPS 日历发布检出，此后数据分支更新不需同步。
+
+独立数据文件校验（路径按实际文件替换）：
+
+```sh
+node --input-type=module -e "import {readFileSync} from 'node:fs'; import {validateChallenge,parseCalendarJSON} from './assets/model.mjs'; validateChallenge(parseCalendarJSON(readFileSync(process.argv[1],'utf8'))); console.log('Challenge data validated.');" /path/to/challenge.json
+```
+
+事实来源验证、实际浏览器跨域读取及 Pages 上线验证独立于离线模型测试，不以单元测试代替。

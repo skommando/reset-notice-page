@@ -1,4 +1,4 @@
-import {validateCalendar,parseCalendarJSON,announcementRecords,safeSourceURL} from './model.mjs';
+import {validateCalendar,parseCalendarJSON,announcementRecords,safeSourceURL,validateChallenge,CHALLENGE_FALLBACK,loadChallenge,latestReset,elapsedHours} from './model.mjs';
 
 const $=id=>document.getElementById(id);
 const pad=n=>String(n).padStart(2,'0');
@@ -83,3 +83,40 @@ async function load(){
  }
 }
 load();
+
+// Challenge is deliberately independent of the email-driven calendar load.
+let challenge=validateChallenge(CHALLENGE_FALLBACK);
+function refreshElapsed(){
+ const anchor=latestReset(challenge),hours=elapsedHours(anchor);
+ $('elapsed').textContent=hours===null?'暂不可计算':`${hours} h`;
+ $('elapsedbasis').replaceChildren();
+ if(anchor&&hours!==null){
+  const link=node('a','',anchor.basis==='completion_post'?'按完成公告计算':'按实际执行时间计算');
+  link.href=anchor.url;link.target='_blank';link.rel='noopener noreferrer';$('elapsedbasis').append(link);
+ }
+}
+function challengeCard(day,number){
+ const reset=day?.reset,completed=reset?.status==='completed',banked=reset?.kind==='banked_reset_grant';
+ const card=node('article',`challengecard${completed?' resetday':''}${day?'':' upcoming'}`),top=node('div','challengetop');
+ top.append(node('span','daynumber',`DAY ${number}`));
+ if(reset)top.append(node('span','resetbadge',banked?'预存重置':completed?'RESET · 已完成':'RESET · 已公布'));
+ card.append(top,node('h3','',day?.title_zh??'待发布'));
+ if(!day)return card;
+ card.append(node('p','challengesummary',day.summary_zh));
+ if(day.improvements.length){const list=node('ul','improvements');for(const item of day.improvements)list.append(node('li','',item.text_zh));card.append(list);}
+ if(banked)card.append(node('p','bankednote',completed?'预存重置已发放，不表示已兑换或即时刷新用量。':'预存重置已公布，发放待确认。'));
+ const links=node('div','challengelinks');
+ day.sources.forEach((source,index)=>{const link=node('a','',source.role==='completion'?'完成公告 ↗':`原帖 ${index+1} ↗`);link.href=source.url;link.target='_blank';link.rel='noopener noreferrer';links.append(link);});card.append(links);
+ return card;
+}
+function renderChallenge(fallback){
+ const byDay=new Map(challenge.days.map(day=>[day.day,day]));
+ $('challengegrid').replaceChildren(...Array.from({length:28},(_,i)=>challengeCard(byDay.get(i+1),i+1)));
+ const date=new Date(Date.parse(challenge.updated_at)+8*3600000).toISOString().slice(0,16).replace('T',' ');
+ $('challengestatus').textContent=`截至 ${date} UTC+8${fallback?' · 离线快照':''}`;
+ refreshElapsed();
+}
+renderChallenge(true);
+loadChallenge().then(result=>{challenge=result.data;renderChallenge(result.fallback);});
+setInterval(refreshElapsed,60000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshElapsed();});

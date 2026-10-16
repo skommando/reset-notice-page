@@ -2,7 +2,7 @@
 import {lstatSync, readdirSync, readFileSync} from 'node:fs';
 import {resolve, join, dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {parseCalendarJSON, validateCalendar} from '../assets/model.mjs';
+import {parseCalendarJSON, validateCalendar, validateChallenge, CHALLENGE_FALLBACK} from '../assets/model.mjs';
 export const ARTIFACT_FILES=Object.freeze([
  'CNAME','index.html','assets/app.mjs','assets/model.mjs','assets/styles.css','data/calendar.json'
 ]);
@@ -39,7 +39,7 @@ export function validatePublicDirectory(directory,{mode='repository'}={}){
  if(readFileSync(join(root,'CNAME'),'utf8')!=='reset.amm907.com\n')fail();
  const bytes=readFileSync(join(root,'data/calendar.json'));
  const input=new TextDecoder('utf-8',{fatal:true,ignoreBOM:true}).decode(bytes);
- validateCalendar(parseCalendarJSON(input));return true;
+ validateCalendar(parseCalendarJSON(input));validateChallenge(CHALLENGE_FALLBACK);return true;
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
  try{
