@@ -16,25 +16,22 @@
  <div class="notice" id="loadstatus" role="status">正在读取公开数据…</div>
  <noscript><p class="notice">请启用 JavaScript 查看日历。</p></noscript>
  <div id="dashboard" hidden>
- <p class="minor statnote">统计卡基于当前月份，待核实为全局；不随下方筛选变化。</p>
- <section id="stats" class="stats" aria-label="Reset 统计"></section>
  <section class="workspace">
   <div>
    <section class="panel" aria-label="Reset 日历">
     <div class="panelhead"><h2 id="period"></h2><div class="segmented" aria-label="切换视图"><button id="monthview" aria-pressed="true">月历</button><button id="yearview" aria-pressed="false">全年</button></div></div>
-    <div class="toolbar"><button id="prev" aria-label="上一月">←</button><button id="next" aria-label="下一月">→</button><span class="minor" id="navhint"></span><span class="spacer"></span><button id="today">返回本月</button></div>
-    <div class="filter"><label>类型 <select id="type" aria-label="筛选 Reset 类型"><option value="all">全部类型</option><option value="forced">Forced</option><option value="banked">Banked</option><option value="unknown">Unknown</option></select></label><label>状态 <select id="status" aria-label="筛选事件状态"><option value="all">全部状态</option><option value="confirmed">已确认</option><option value="announced">已预告</option><option value="delayed">已延期</option><option value="cancelled">已取消</option><option value="unknown">状态待核实</option></select></label><button id="clear">重置筛选</button></div>
+    <div class="toolbar"><button id="prev" aria-label="上一月">←</button><button id="next" aria-label="下一月">→</button><span class="minor">推文发布日期 · UTC+8</span><span class="spacer"></span><button id="today">返回本月</button></div>
     <div id="month"><div class="week" aria-hidden="true"><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span></div><div class="days" id="days"></div></div>
-    <div id="year" hidden><div id="yeargrid" class="yeargrid"></div><p class="yearnote">浅紫：1 次已确认；深紫：2 次及以上。轮廓：有其他信息。仅以已核实执行日期计算强度；点击日期回到对应月份。</p></div>
-    <div class="legend"><span><i class="fillkey" aria-hidden="true"></i>月历有信息</span><span><i class="marker"></i>Forced</span><span><i class="marker banked"></i>Banked</span><span><i class="marker unknown"></i>Unknown</span><span><i class="marker planned"></i>信息标记</span><span class="minor">淡紫表示当前筛选下有记录，含公告发布时间、预告、延期、取消和待核实来源；紫边框表示选中。确认数独立核实，不以时间经过推断状态。</span></div>
+    <div id="year" hidden><div id="yeargrid" class="yeargrid"></div><p class="yearnote">有轮廓的日期收录了推文；点击日期查看原文。</p></div>
+    <div class="legend"><span><i class="fillkey" aria-hidden="true"></i>有推文的日期</span></div>
    </section>
-   <section class="panel pending"><h2>待核实记录 <span id="pendingcount" class="pill"></span></h2><p class="minor">全局事件缺项与未关联来源，可点选查看；不以发帖时间补执行日期。</p><div id="pending"></div></section>
+
   </div>
-  <aside class="panel detailpanel" aria-label="所选日期与来源详情"><div class="detailtop"><div class="eyebrow">SELECTED DAY / SOURCE TRAIL</div><h2 id="detailtitle"></h2><p class="minor" id="detailcaption"></p></div><div class="detailbody" id="detail" aria-live="polite"></div></aside>
+  <aside class="panel detailpanel" aria-label="所选日期与来源详情"><div class="detailtop"><div class="eyebrow">SELECTED DAY / TWEETS</div><h2 id="detailtitle"></h2><p class="minor" id="detailcaption"></p></div><div class="detailbody" id="detail" aria-live="polite"></div></aside>
  </section>
- <details class="coverage"><summary>数据覆盖与时间说明</summary><div class="coveragebody"><p id="generated"></p><p id="checkedrange"></p><p id="protocols"></p><ul id="coveragenotes"></ul></div></details>
+
  </div>
- <footer class="bottom"><span>所有日期与时刻均为 UTC+8；日期精度记录不补零点。</span><span>先看事件，再看证据。</span></footer>
+ <footer class="bottom"><span>推文发布时间统一显示为 UTC+8。</span><span>按日期阅读推文。</span></footer>
 </main>
 </body>
 </html>

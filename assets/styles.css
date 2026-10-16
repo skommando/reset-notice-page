@@ -209,3 +209,6 @@ button,select{min-height:36px}
 @media(max-width:560px){.monthdrill{min-height:44px;padding:0 4px}}
 /* 热力格由七列网格定尺寸，避免普通按钮最小高度把桌面小格挤叠。 */
 .heat{width:100%;min-height:0}
+
+/* Tweet bodies remain multiline and readable outside the old disclosure wrapper. */
+.posttext { white-space: pre-wrap; overflow-wrap: anywhere; }

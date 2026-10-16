@@ -107,13 +107,13 @@ test('strict JSON parsing rejects duplicate keys and nonfinite values',()=>{
  for(const text of ['{"x":1,"x":2}','{"x":{"a":1,"a":2}}','{"x":1e999}','{"x":NaN}'])assert.throws(()=>parseCalendarJSON(text));
 });
 
-test('UI assets preserve approved layout, unknown filter and secure DOM-only rendering',()=>{
+test('UI assets preserve approved title and secure DOM-only rendering',()=>{
  const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
  const app=readFileSync(new URL('../assets/app.mjs',import.meta.url),'utf8');
  const css=readFileSync(new URL('../assets/styles.css',import.meta.url),'utf8');
  assert.match(html,/<h1>减额不是代表你的错，重置不是唯一的结果<\/h1>/);
  assert.match(html,/<p class="subtitle">站起来蹬。<\/p>/);
- assert.match(html,/<option value="unknown">状态待核实<\/option>/);
+
  assert.match(html,/assets\/app.mjs/);
  assert.match(app,/fetch\('\.\/data\/calendar\.json'/);
  assert.doesNotMatch(app,/innerHTML|outerHTML|insertAdjacentHTML|document\.write/);
@@ -232,11 +232,6 @@ test('ID inferred publication is information only and unknown publication stays 
  assert.equal(monthStats(data,'2026-09').unlinked_sources,2);
  assert.equal(calendarRecords(data).filter(r=>r.pending).length,2);
 });
-test('announcement UI identifies publication separately and does not duplicate pending records',()=>{
- const app=readFileSync(new URL('../assets/app.mjs',import.meta.url),'utf8');
- assert.match(app,/公告发布时间/);assert.match(app,/公告日期不代表执行日期/);
- assert.match(app,/r\.type!=='announcement'/);
-});
 
 test('initial history selection opens latest available past date instead of an empty today',async()=>{
  const {initialBrowseDate}=await import('../assets/model.mjs');
@@ -259,17 +254,30 @@ test('optional Chinese summary is separate from missing original and supports Un
   s.summary_zh=value;assert.throws(()=>validateCalendar(data));
  }
 });
-test('mirror reported publication remains pending evidence and gets a distinct UI label',()=>{
+test('mirror reported publication retains pending evidence without presenting it in tweet cards',()=>{
  const s=publishedSource(123,'2026-10-15T14:28+08:00','mirror_reported');
  const data=dataset([], [s], [{source_id:s.id,mentioned_at:null,display_date:null,display_basis:'mentioned'}]);
  assert.equal(validateCalendar(data),data);
  assert.equal(dayDetails(data,'2026-10-15')[0].countable,false);
  const app=readFileSync(new URL('../assets/app.mjs',import.meta.url),'utf8');
- assert.match(app,/第三方镜像报告，非 X 核实/);assert.match(app,/summary_zh/);assert.match(app,/原文未收录/);
+ assert.ok(s.verification.fields.includes('published_at'));assert.match(app,/summary_zh/);assert.doesNotMatch(app,/第三方镜像报告，非 X 核实/);
 });
 
-test('source statistic copy explicitly excludes the independent publication layer',()=>{
+
+test('tweet-first presentation shows original text openly without event uncertainty UI',()=>{
  const app=readFileSync(new URL('../assets/app.mjs',import.meta.url),'utf8');
- assert.match(app,/执行 \/ 计划 \/ 来源所述日期的唯一来源/);
- assert.doesNotMatch(app,/所有有日期记录的唯一来源/);
+ const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+ assert.doesNotMatch(app,/公告日期不代表执行日期|非 X 核实|执行时间：|待核实：|Unknown Reset/);
+ assert.doesNotMatch(html,/id="stats"|id="status"|id="type"|id="pending"/);
+ assert.match(app,/source\.text/);assert.match(app,/source\.summary_zh/);
+ assert.doesNotMatch(app,/node\('details','post'/);
+ assert.match(app,/textContent/);assert.match(app,/noopener noreferrer/);
+});
+
+test('always-visible tweet text preserves multiline layout and wraps long tokens',()=>{
+ const css=readFileSync(new URL('../assets/styles.css',import.meta.url),'utf8');
+ const app=readFileSync(new URL('../assets/app.mjs',import.meta.url),'utf8');
+ assert.match(css,/\.posttext\s*\{[^}]*white-space:\s*pre-wrap\s*;[^}]*overflow-wrap:\s*anywhere\s*;?[^}]*\}/);
+ assert.match(app,/article\.append\(node\('p','posttext',source\.text\)\)/);
+ assert.doesNotMatch(app,/source\.text\.(?:slice|substring|replace)|node\('details'/);
 });
