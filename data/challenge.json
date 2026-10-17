@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-16T08:33:00.000Z",
+  "updated_at": "2026-10-17T00:03:15.000Z",
   "pledge_url": "https://x.com/thsottiaux/status/2106845241357824205",
   "days": [
     {
@@ -375,6 +375,52 @@
           "url": "https://x.com/thsottiaux/status/2110750421367287996",
           "published_at": "2026-10-15T15:11:30.000Z",
           "time_basis": "mirror_reported",
+          "role": "announcement"
+        }
+      ],
+      "reset": null
+    },
+    {
+      "day": 12,
+      "title_zh": "提高用量效率与 Pro 体验",
+      "summary_zh": "Codex 与 Work 提高有效用量，GPT-6 Pro 获得改进，Dots 现可放到主屏幕。",
+      "improvements": [
+        {
+          "text_zh": "跨子代理复用上下文、延长上下文缓存时间，并优化请求路由以提高缓存命中率，从而提高有效用量。",
+          "source_urls": [
+            "https://x.com/thsottiaux/status/2111244596131111253"
+          ]
+        },
+        {
+          "text_zh": "为所有 Pro 用户改进 GPT-6 Pro；所链接的官方公告介绍了 Pro Chat 中更快的 Astra Pro 响应、工具使用、并行代理及进度与完成结果查看。",
+          "source_urls": [
+            "https://x.com/thsottiaux/status/2111244957851984181"
+          ]
+        },
+        {
+          "text_zh": "Dots 现可放到主屏幕，作者提醒更新应用。",
+          "source_urls": [
+            "https://x.com/thsottiaux/status/2111245052513259606"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "url": "https://x.com/thsottiaux/status/2111244596131111253",
+          "published_at": "2026-10-16T23:55:11.000Z",
+          "time_basis": "verified",
+          "role": "announcement"
+        },
+        {
+          "url": "https://x.com/thsottiaux/status/2111244957851984181",
+          "published_at": "2026-10-16T23:56:37.000Z",
+          "time_basis": "verified",
+          "role": "announcement"
+        },
+        {
+          "url": "https://x.com/thsottiaux/status/2111245052513259606",
+          "published_at": "2026-10-16T23:57:00.000Z",
+          "time_basis": "verified",
           "role": "announcement"
         }
       ],
