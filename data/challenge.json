@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-17T00:03:15.000Z",
+  "updated_at": "2026-10-17T17:05:20.000Z",
   "pledge_url": "https://x.com/thsottiaux/status/2106845241357824205",
   "days": [
     {
@@ -425,6 +425,33 @@
         }
       ],
       "reset": null
+    },
+    {
+      "day": 13,
+      "title_zh": "用量重置预告",
+      "summary_zh": "预告新一轮用量重置，预计当日 PST 日终前上线；尚未确认完成。",
+      "improvements": [],
+      "sources": [
+        {
+          "url": "https://x.com/thsottiaux/status/2111492673890824348",
+          "published_at": "2026-10-17T16:20:57.000Z",
+          "time_basis": "mirror_reported",
+          "role": "announcement"
+        },
+        {
+          "url": "https://x.com/thsottiaux/status/2111492738025959922",
+          "published_at": "2026-10-17T16:21:13.000Z",
+          "time_basis": "mirror_reported",
+          "role": "announcement"
+        }
+      ],
+      "reset": {
+        "kind": "usage_reset",
+        "status": "announced",
+        "completion_source_url": null,
+        "executed_at": null,
+        "execution_source_url": null
+      }
     }
   ]
 }
