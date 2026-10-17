@@ -408,6 +408,12 @@ export function validateChallenge(data){
  }
  return data;
 }
+// Presentation only: preserve the ascending public data contract.
+export function challengeDayOrder(data){
+ const published=new Set(data.days.map(day=>day.day));
+ const upcoming=Array.from({length:28},(_,i)=>i+1).filter(number=>!published.has(number));
+ return [...published].sort((a,b)=>b-a).concat(upcoming);
+}
 export function latestReset(data){
  // Select the newest completed identity first; only then prefer its execution evidence.
  const completed=data.days.filter(d=>d.reset?.status==='completed'&&d.reset.kind!=='banked_reset_grant').map(d=>({day:d.day,reset:d.reset,source:d.sources.find(s=>s.url===d.reset.completion_source_url)}));

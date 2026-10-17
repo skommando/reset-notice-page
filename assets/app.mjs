@@ -1,4 +1,4 @@
-import {validateCalendar,parseCalendarJSON,announcementRecords,safeSourceURL,validateChallenge,CHALLENGE_FALLBACK,loadChallenge,latestReset,elapsedHours} from './model.mjs';
+import {validateCalendar,parseCalendarJSON,announcementRecords,safeSourceURL,validateChallenge,CHALLENGE_FALLBACK,loadChallenge,challengeDayOrder,latestReset,elapsedHours} from './model.mjs';
 
 const $=id=>document.getElementById(id);
 const pad=n=>String(n).padStart(2,'0');
@@ -114,7 +114,7 @@ function renderChallenge(fallback){
  const currentDay=Math.max(0,...challenge.days.map(day=>day.day));
  $('challengeprogress').textContent=currentDay?`已更新至第 ${currentDay} / 28 天`:'尚未开始 / 28 天';
  const byDay=new Map(challenge.days.map(day=>[day.day,day]));
- $('challengegrid').replaceChildren(...Array.from({length:28},(_,i)=>challengeCard(byDay.get(i+1),i+1)));
+ $('challengegrid').replaceChildren(...challengeDayOrder(challenge).map(number=>challengeCard(byDay.get(number),number)));
  const date=new Date(Date.parse(challenge.updated_at)+8*3600000).toISOString().slice(0,16).replace('T',' ');
  $('challengestatus').textContent=`截至 ${date} UTC+8${fallback?' · 离线快照':''}`;
  refreshElapsed();

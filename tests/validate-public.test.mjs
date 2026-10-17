@@ -132,16 +132,19 @@ test('banked reset card states announced versus completed without inventing issu
 
 test('challenge heading shows highest published day, including gaps and empty data',async()=>{
  const {runInNewContext}=await import('node:vm');
- const {CHALLENGE_FALLBACK,validateChallenge}=await import('../assets/model.mjs');
+ const {CHALLENGE_FALLBACK,validateChallenge,challengeDayOrder}=await import('../assets/model.mjs');
  const source=readFileSync(join(root,'assets/app.mjs'),'utf8');
  const render=source.slice(source.indexOf('function renderChallenge('),source.indexOf('\nrenderChallenge(true);'));
  for(const [numbers,expected] of [[[1,11],'已更新至第 11 / 28 天'],[[1,3],'已更新至第 3 / 28 天'],[[28],'已更新至第 28 / 28 天'],[[],'尚未开始 / 28 天']]){
   const challenge=structuredClone(CHALLENGE_FALLBACK);
   challenge.days=numbers.map((number,i)=>({...structuredClone(CHALLENGE_FALLBACK.days[i]),day:number}));
   validateChallenge(challenge);
-  const elements=Object.fromEntries(['challengegrid','challengestatus','challengeprogress'].map(id=>[id,{textContent:'',replaceChildren(){}}]));
-  runInNewContext(render+';renderChallenge(false);',{challenge,$:id=>elements[id],challengeCard:()=>null,refreshElapsed:()=>{}});
+  const elements=Object.fromEntries(['challengegrid','challengestatus','challengeprogress'].map(id=>[id,{textContent:'',children:[],replaceChildren(...children){this.children=children;}}]));
+  runInNewContext(render+';renderChallenge(false);',{challenge,challengeDayOrder,$:id=>elements[id],challengeCard:(day,number)=>({day,number}),refreshElapsed:()=>{}});
   assert.equal(elements.challengeprogress.textContent,expected);
+  const cards=elements.challengegrid.children;
+  assert.deepEqual(cards.map(card=>card.number),[...numbers].sort((a,b)=>b-a).concat(Array.from({length:28},(_,i)=>i+1).filter(number=>!numbers.includes(number))));
+  assert.equal(cards.filter(card=>card.day).length,numbers.length);
  }
  const html=readFileSync(join(root,'index.html'),'utf8');
  assert.match(html,/<h2 id="challengetitle">28 天挑战<\/h2><span id="challengeprogress"/);

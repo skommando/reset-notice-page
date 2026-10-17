@@ -347,3 +347,37 @@ for(const unsafe of ['\u202e','\ud800'])test('challenge text rejects unsafe Unic
  const data=copy(challengeModel.CHALLENGE_FALLBACK);data.days[0].summary_zh+='测试'+unsafe;
  assert.throws(()=>challengeModel.validateChallenge(parseCalendarJSON(JSON.stringify(data))));
 });
+
+test('challenge display puts published days newest first and upcoming days last',()=>{
+ const data=copy(challengeModel.CHALLENGE_FALLBACK);
+ const order=challengeModel.challengeDayOrder(data);
+ assert.deepEqual(order,[11,10,9,8,7,6,5,4,3,2,1,...Array.from({length:17},(_,i)=>i+12)]);
+});
+test('challenge display keeps sparse unpublished days at the bottom in ascending order',()=>{
+ const data=copy(challengeModel.CHALLENGE_FALLBACK);
+ data.days=data.days.filter(d=>[1,3,11].includes(d.day));
+ const order=challengeModel.challengeDayOrder(data);
+ assert.deepEqual(order,[11,3,1,...Array.from({length:28},(_,i)=>i+1).filter(n=>![1,3,11].includes(n))]);
+ assert.equal(new Set(order).size,28);
+});
+test('challenge display handles empty and fully published challenges',()=>{
+ assert.deepEqual(challengeModel.challengeDayOrder({days:[]}),Array.from({length:28},(_,i)=>i+1));
+ const days=Array.from({length:28},(_,i)=>({day:i+1}));
+ assert.deepEqual(challengeModel.challengeDayOrder({days}),Array.from({length:28},(_,i)=>28-i));
+});
+test('challenge display leaves validated ascending input and nested records unchanged',()=>{
+ const data=copy(challengeModel.CHALLENGE_FALLBACK),before=copy(data);
+ const freeze=value=>{if(value&&typeof value==='object'){Object.values(value).forEach(freeze);Object.freeze(value);}};
+ freeze(data);
+ challengeModel.challengeDayOrder(data);
+ assert.deepEqual(data,before);
+ assert.equal(challengeModel.validateChallenge(data),data);
+ const descending=copy(data);descending.days.reverse();
+ assert.throws(()=>challengeModel.validateChallenge(descending));
+});
+test('challenge renderer uses display order for both initial and loaded cards',()=>{
+ const app=readFileSync(new URL('../assets/app.mjs',import.meta.url),'utf8');
+ assert.match(app,/challengeDayOrder\(challenge\)\.map\(number=>challengeCard\(byDay\.get\(number\),number\)\)/);
+ assert.match(app,/renderChallenge\(true\)/);
+ assert.match(app,/challenge=result\.data;renderChallenge\(result\.fallback\)/);
+});
