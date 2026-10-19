@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-19T02:57:34.862Z",
+  "updated_at": "2026-10-19T20:03:54.013Z",
   "pledge_url": "https://x.com/thsottiaux/status/2106845241357824205",
   "days": [
     {
@@ -475,6 +475,21 @@
         {
           "url": "https://x.com/thsottiaux/status/2111990254408434095",
           "published_at": "2026-10-19T01:18:10.000Z",
+          "time_basis": "mirror_reported",
+          "role": "announcement"
+        }
+      ],
+      "reset": null
+    },
+    {
+      "day": 15,
+      "title_zh": "COOKED 第一期直播",
+      "summary_zh": "以 Day 15 标注并转发 Codex 的 COOKED 第一期直播；可见文字未说明具体改进或重置。",
+      "improvements": [],
+      "sources": [
+        {
+          "url": "https://x.com/thsottiaux/status/2112268918681485431",
+          "published_at": "2026-10-19T19:45:28.000Z",
           "time_basis": "mirror_reported",
           "role": "announcement"
         }
