@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-17T17:05:20.000Z",
+  "updated_at": "2026-10-19T02:05:25.727Z",
   "pledge_url": "https://x.com/thsottiaux/status/2106845241357824205",
   "days": [
     {
@@ -452,6 +452,28 @@
         "executed_at": null,
         "execution_source_url": null
       }
+    },
+    {
+      "day": 14,
+      "title_zh": "桌面端编辑历史消息",
+      "summary_zh": "桌面应用现可编辑同一对话线程内的历史消息。",
+      "improvements": [
+        {
+          "text_zh": "支持编辑线程中此前发送的消息；原帖未说明具体套餐或操作系统限制。",
+          "source_urls": [
+            "https://x.com/thsottiaux/status/2111990254408434095"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "url": "https://x.com/thsottiaux/status/2111990254408434095",
+          "published_at": "2026-10-19T01:18:10.000Z",
+          "time_basis": "mirror_reported",
+          "role": "announcement"
+        }
+      ],
+      "reset": null
     }
   ]
 }
