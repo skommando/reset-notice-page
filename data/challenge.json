@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-19T20:03:54.013Z",
+  "updated_at": "2026-10-20T07:01:47.123Z",
   "pledge_url": "https://x.com/thsottiaux/status/2106845241357824205",
   "days": [
     {
@@ -483,8 +483,8 @@
     },
     {
       "day": 15,
-      "title_zh": "COOKED 第一期直播",
-      "summary_zh": "以 Day 15 标注并转发 Codex 的 COOKED 第一期直播；可见文字未说明具体改进或重置。",
+      "title_zh": "COOKED 直播与用量重置",
+      "summary_zh": "转发 COOKED 第一期直播后，作者再次明确标注 Day 15，表示仍在准备中并已重置；实际执行时间及具体适用范围未说明。",
       "improvements": [],
       "sources": [
         {
@@ -492,9 +492,21 @@
           "published_at": "2026-10-19T19:45:28.000Z",
           "time_basis": "mirror_reported",
           "role": "announcement"
+        },
+        {
+          "url": "https://x.com/thsottiaux/status/2112432076767289678",
+          "published_at": "2026-10-20T06:33:48.000Z",
+          "time_basis": "mirror_reported",
+          "role": "completion"
         }
       ],
-      "reset": null
+      "reset": {
+        "kind": "usage_reset",
+        "status": "completed",
+        "completion_source_url": "https://x.com/thsottiaux/status/2112432076767289678",
+        "executed_at": null,
+        "execution_source_url": null
+      }
     }
   ]
 }
