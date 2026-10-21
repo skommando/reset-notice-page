@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-20T07:01:47.123Z",
+  "updated_at": "2026-10-21T02:02:21.794Z",
   "pledge_url": "https://x.com/thsottiaux/status/2106845241357824205",
   "days": [
     {
@@ -507,6 +507,34 @@
         "executed_at": null,
         "execution_source_url": null
       }
+    },
+    {
+      "day": 16,
+      "title_zh": "延长缓存与会话恢复",
+      "summary_zh": "API 支持缓存 12 小时；登录用户在 Codex 与 Work 中永久保留缓存，返回旧会话或数小时后恢复可命中缓存。",
+      "improvements": [
+        {
+          "text_zh": "API 现可使用 12 小时缓存。",
+          "source_urls": [
+            "https://x.com/thsottiaux/status/2112712984644784534"
+          ]
+        },
+        {
+          "text_zh": "登录用户跨 Codex 与 Work 保留缓存；作者表示重返旧对话或间隔数小时后恢复不会因此受惩罚，并保证命中缓存。原帖未明确具体套餐或其他限制。",
+          "source_urls": [
+            "https://x.com/thsottiaux/status/2112712984644784534"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "url": "https://x.com/thsottiaux/status/2112712984644784534",
+          "published_at": "2026-10-21T01:10:02.000Z",
+          "time_basis": "mirror_reported",
+          "role": "announcement"
+        }
+      ],
+      "reset": null
     }
   ]
 }
