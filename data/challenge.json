@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-21T02:02:21.794Z",
+  "updated_at": "2026-10-22T07:04:20.370Z",
   "pledge_url": "https://x.com/thsottiaux/status/2106845241357824205",
   "days": [
     {
@@ -535,6 +535,33 @@
         }
       ],
       "reset": null
+    },
+    {
+      "day": 17,
+      "title_zh": "用量重置预告",
+      "summary_zh": "作者宣布 Day 17 为重置日，并在该帖下补充“明天上午 10 点 PST 前”；按发帖时刻与原文 PST 换算，上界为 UTC+8 2026年10月23日02:00之前。回复指代重置属上下文判断，尚未确认完成，实际执行时间及范围未说明；Daybreak Blue 申请提醒不认定为重置条件。",
+      "improvements": [],
+      "sources": [
+        {
+          "url": "https://x.com/thsottiaux/status/2113162277688070445",
+          "published_at": "2026-10-22T06:55:22.314Z",
+          "time_basis": "id_inferred",
+          "role": "announcement"
+        },
+        {
+          "url": "https://x.com/thsottiaux/status/2113162413008884099",
+          "published_at": "2026-10-22T06:55:54.577Z",
+          "time_basis": "id_inferred",
+          "role": "announcement"
+        }
+      ],
+      "reset": {
+        "kind": "usage_reset",
+        "status": "announced",
+        "completion_source_url": null,
+        "executed_at": null,
+        "execution_source_url": null
+      }
     }
   ]
 }
