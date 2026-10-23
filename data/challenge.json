@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "updated_at": "2026-10-23T04:57:10.800Z",
   "pledge_url": "https://x.com/thsottiaux/status/2106845241357824205",
   "days": [
@@ -86,7 +86,9 @@
         "status": "completed",
         "completion_source_url": "https://x.com/thsottiaux/status/2107676072871600470",
         "executed_at": null,
-        "execution_source_url": null
+        "execution_source_url": null,
+        "planned_deadline_at": null,
+        "planned_deadline_source_url": null
       }
     },
     {
@@ -138,7 +140,9 @@
         "status": "completed",
         "completion_source_url": "https://x.com/thsottiaux/status/2108040921044639779",
         "executed_at": null,
-        "execution_source_url": null
+        "execution_source_url": null,
+        "planned_deadline_at": null,
+        "planned_deadline_source_url": null
       }
     },
     {
@@ -233,7 +237,9 @@
         "status": "completed",
         "completion_source_url": "https://x.com/thsottiaux/status/2109132167112782291",
         "executed_at": null,
-        "execution_source_url": null
+        "execution_source_url": null,
+        "planned_deadline_at": null,
+        "planned_deadline_source_url": null
       }
     },
     {
@@ -300,7 +306,9 @@
         "status": "completed",
         "completion_source_url": "https://x.com/thsottiaux/status/2109873287853707513",
         "executed_at": null,
-        "execution_source_url": null
+        "execution_source_url": null,
+        "planned_deadline_at": null,
+        "planned_deadline_source_url": null
       }
     },
     {
@@ -355,7 +363,9 @@
         "status": "completed",
         "completion_source_url": "https://x.com/thsottiaux/status/2110618732666257557",
         "executed_at": null,
-        "execution_source_url": null
+        "execution_source_url": null,
+        "planned_deadline_at": null,
+        "planned_deadline_source_url": null
       }
     },
     {
@@ -456,7 +466,9 @@
         "status": "completed",
         "completion_source_url": "https://x.com/thsottiaux/status/2111566005684289735",
         "executed_at": null,
-        "execution_source_url": null
+        "execution_source_url": null,
+        "planned_deadline_at": null,
+        "planned_deadline_source_url": null
       }
     },
     {
@@ -505,7 +517,9 @@
         "status": "completed",
         "completion_source_url": "https://x.com/thsottiaux/status/2112432076767289678",
         "executed_at": null,
-        "execution_source_url": null
+        "execution_source_url": null,
+        "planned_deadline_at": null,
+        "planned_deadline_source_url": null
       }
     },
     {
@@ -560,7 +574,9 @@
         "status": "announced",
         "completion_source_url": null,
         "executed_at": null,
-        "execution_source_url": null
+        "execution_source_url": null,
+        "planned_deadline_at": "2026-10-22T18:00:00.000Z",
+        "planned_deadline_source_url": "https://x.com/thsottiaux/status/2113162413008884099"
       }
     },
     {
@@ -618,7 +634,9 @@
         "status": "announced",
         "completion_source_url": null,
         "executed_at": null,
-        "execution_source_url": null
+        "execution_source_url": null,
+        "planned_deadline_at": "2026-10-23T18:00:00.000Z",
+        "planned_deadline_source_url": "https://x.com/thsottiaux/status/2113492502355562875"
       }
     }
   ]
