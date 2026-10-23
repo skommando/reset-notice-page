@@ -139,8 +139,8 @@ test('challenge heading shows highest published day, including gaps and empty da
   const challenge=structuredClone(CHALLENGE_FALLBACK);
   challenge.days=numbers.map((number,i)=>({...structuredClone(CHALLENGE_FALLBACK.days[i]),day:number}));
   validateChallenge(challenge);
-  const elements=Object.fromEntries(['challengegrid','challengestatus','challengeprogress'].map(id=>[id,{textContent:'',children:[],replaceChildren(...children){this.children=children;}}]));
-  runInNewContext(render+';renderChallenge(false);',{challenge,challengeDayOrder,$:id=>elements[id],challengeCard:(day,number)=>({day,number}),refreshElapsed:()=>{}});
+  const elements=Object.fromEntries(['challengegrid','challengestatus','challengeprogress'].map(id=>[id,{textContent:'',children:[],contains(){return false;},replaceChildren(...children){this.children=children;}}]));
+  runInNewContext(render+';renderChallenge(false);',{challenge,renderedDays:null,document:{activeElement:null},challengeDayOrder,$:id=>elements[id],challengeCard:(day,number)=>({day,number}),refreshElapsed:()=>{}});
   assert.equal(elements.challengeprogress.textContent,expected);
   const cards=elements.challengegrid.children;
   assert.deepEqual(cards.map(card=>card.number),[...numbers].sort((a,b)=>b-a).concat(Array.from({length:28},(_,i)=>i+1).filter(number=>!numbers.includes(number))));

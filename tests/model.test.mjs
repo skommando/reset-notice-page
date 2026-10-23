@@ -379,5 +379,125 @@ test('challenge renderer uses display order for both initial and loaded cards',(
  const app=readFileSync(new URL('../assets/app.mjs',import.meta.url),'utf8');
  assert.match(app,/challengeDayOrder\(challenge\)\.map\(number=>challengeCard\(byDay\.get\(number\),number\)\)/);
  assert.match(app,/renderChallenge\(true\)/);
- assert.match(app,/challenge=result\.data;renderChallenge\(result\.fallback\)/);
+ assert.match(app,/challenge=result\.data;renderChallenge\(result\.fallback,result\.stale\)/);
 });
+
+
+test('derived reset view distinguishes pending announcements from the completed anchor',()=>{
+ assert.equal(typeof challengeModel.challengeResetView,'function');
+ const data=copy(challengeModel.CHALLENGE_FALLBACK),now=Date.parse('2026-10-16T08:00:00Z');
+ const view=challengeModel.challengeResetView(data,now);
+ assert.equal(view.anchor.day,10);assert.equal(view.hours,'25.5');
+ const pending=copy(data.days[9]);pending.day=12;pending.reset.status='announced';pending.reset.completion_source_url=null;pending.reset.executed_at=null;pending.reset.execution_source_url=null;
+ pending.sources=pending.sources.slice(0,1).map(s=>({...s,role:'announcement',url:s.url.replace(/\d+$/, '2113492187770175603'),published_at:'2026-10-16T08:01:00.000Z'}));pending.improvements=[];
+ data.days.push(pending);data.updated_at='2026-10-16T08:02:00.000Z';
+ const next=challengeModel.challengeResetView(data,now);
+ assert.equal(next.anchor.day,10);assert.equal(next.pending.day,12);assert.equal(next.hours,'25.5');
+ assert.equal(challengeModel.challengeResetView({...data,days:[]},now).anchor,null);
+});
+test('challenge refresh coalesces requests and keeps last good data after failure or stale response',async()=>{
+ assert.equal(typeof challengeModel.createChallengeRefresh,'function');
+ const initial=copy(challengeModel.CHALLENGE_FALLBACK),newer=copy(initial);newer.updated_at='2026-10-17T00:00:00.000Z';
+ let resolve,calls=0,mode='pending';const changes=[];
+ const refresh=challengeModel.createChallengeRefresh({initial,load:()=>{calls++;if(mode==='pending')return new Promise(r=>resolve=r);return Promise.resolve(mode);},onChange:r=>changes.push(r)});
+ const a=refresh.refresh(),b=refresh.refresh();assert.equal(calls,1);resolve({data:newer,fallback:false});await Promise.all([a,b]);
+ assert.equal(changes.at(-1).data.updated_at,newer.updated_at);
+ mode={data:initial,fallback:true};await refresh.refresh();assert.equal(changes.at(-1).data.updated_at,newer.updated_at);assert.equal(changes.at(-1).stale,true);assert.equal(changes.at(-1).fallback,false);
+ mode={data:initial,fallback:false};await refresh.refresh();assert.equal(changes.at(-1).data.updated_at,newer.updated_at);assert.equal(changes.at(-1).stale,true);
+ mode={data:newer,fallback:false};await refresh.refresh();assert.equal(changes.at(-1).stale,false);
+});
+test('challenge refresh validates candidates and recovers after a rejected load',async()=>{
+ assert.equal(typeof challengeModel.createChallengeRefresh,'function');
+ const initial=copy(challengeModel.CHALLENGE_FALLBACK),changes=[];let mode='throw';
+ const refresh=challengeModel.createChallengeRefresh({initial,load:async()=>{if(mode==='throw')throw Error('offline');return mode;},onChange:r=>changes.push(r)});
+ await refresh.refresh();assert.equal(changes.at(-1).stale,true);
+ mode={data:{...initial,secret:true},fallback:false};await refresh.refresh();assert.equal(changes.at(-1).stale,true);assert.equal(changes.at(-1).data,initial);
+ mode={data:initial,fallback:false};await refresh.refresh();assert.equal(changes.at(-1).stale,false);
+});
+test('visible minute ticks and visibility restoration refresh data, while elapsed stays independent',()=>{
+ const app=readFileSync(new URL('../assets/app.mjs',import.meta.url),'utf8');
+ assert.match(app,/setInterval\(\(\)=>\{refreshElapsed\(\);if\(!document.hidden\)challengeRefresh.refresh\(\);\},60000\)/);
+ assert.match(app,/visibilitychange.*refreshElapsed\(\);challengeRefresh.refresh\(\)/);
+ assert.match(app,/最近完成：Day/);assert.match(app,/待完成确认/);
+});
+
+test('app lifecycle refreshes changed data without reload, ignores hidden polling and survives network failure',async()=>{
+ const saved={document:globalThis.document,fetch:globalThis.fetch,setInterval:globalThis.setInterval};const savedNow=Date.now;
+ const elements=new Map(),events=new Map();let tick,requests=0,offline=false;
+ class Element{constructor(){this.children=[];this.dataset={};this.classList={add(){}};}append(...nodes){this.children.push(...nodes);}replaceChildren(...nodes){this.children=nodes;}setAttribute(){}addEventListener(){}contains(node){return node===this||this.children.some(child=>child.contains?.(node));}focus(){document.activeElement=this;}querySelectorAll(selector){return this.children.flatMap(child=>[...(selector==='a'&&child.href?[child]:[]),...child.querySelectorAll(selector)]);}get textContent(){return (this.text??'')+this.children.map(n=>n.textContent??'').join('');}set textContent(value){this.text=value;this.children=[];}}
+ const data=copy(challengeModel.CHALLENGE_FALLBACK);
+ globalThis.document={hidden:false,activeElement:null,getElementById:id=>{if(!elements.has(id))elements.set(id,new Element());return elements.get(id);},createElement:()=>new Element(),addEventListener:(name,fn)=>events.set(name,fn)};
+ globalThis.setInterval=fn=>{tick=fn;return 0;};
+ globalThis.fetch=async url=>{if(url.startsWith('./'))return {ok:false};requests++;if(offline)throw Error('offline');return {ok:true,text:async()=>JSON.stringify(data)};};
+ const settle=()=>new Promise(resolve=>setTimeout(resolve,0));
+ try{
+  await import('../assets/app.mjs?lifecycle');await settle();
+  assert.equal(requests,1);assert.match(elements.get('elapsedbasis').textContent,/最近完成：Day 10/);
+  const grid=elements.get('challengegrid'),firstCard=grid.children[0],focused=grid.querySelectorAll('a')[0];focused.focus();
+  const basisLink=elements.get('elapsedbasis').querySelectorAll('a')[0];
+  tick();await settle();assert.equal(requests,2);assert.equal(grid.children[0],firstCard,'unchanged response must not rebuild cards');assert.equal(document.activeElement,focused);assert.equal(elements.get('elapsedbasis').querySelectorAll('a')[0],basisLink,'unchanged basis keeps its link');
+  const newer=copy(data.days[9]);newer.day=12;newer.sources=[{...newer.sources[2],url:'https://x.com/thsottiaux/status/2113492187770175603',published_at:'2026-10-17T00:00:00.000Z'}];newer.reset.completion_source_url=newer.sources[0].url;
+  data.days.push(newer);data.updated_at='2026-10-17T00:01:00.000Z';
+  tick();await settle();assert.equal(requests,3);assert.notEqual(grid.children[0],firstCard);assert.equal(document.activeElement.href,focused.href);assert.ok(grid.contains(document.activeElement),'updated cards restore still-existing focused link');assert.match(elements.get('elapsedbasis').textContent,/最近完成：Day 12/);
+  assert.equal(elements.get('elapsed').textContent,challengeModel.elapsedHours(challengeModel.latestReset(data))+' h');
+  const latestCard=grid.children[0],latestFocus=document.activeElement;
+  document.hidden=true;tick();await settle();assert.equal(requests,3);
+  document.hidden=false;offline=true;events.get('visibilitychange')();await settle();
+  assert.equal(requests,4);assert.equal(grid.children[0],latestCard);assert.equal(document.activeElement,latestFocus);assert.match(elements.get('elapsedbasis').textContent,/最近完成：Day 12/);assert.match(elements.get('challengestatus').textContent,/保留上次资料/);
+  offline=false;events.get('visibilitychange')();await settle();assert.equal(requests,5);assert.equal(grid.children[0],latestCard);assert.equal(document.activeElement,latestFocus);assert.doesNotMatch(elements.get('challengestatus').textContent,/更新暂不可用/);
+   Object.assign(data,scheduledChallenge());let clock=Date.parse('2026-10-23T17:59:59.999Z');Date.now=()=>clock;
+  tick();await settle();assert.match(elements.get('elapsedbasis').textContent,/推定已执行：Day 17/);
+  const retained=elements.get('challengegrid').children[0];offline=true;clock=Date.parse('2026-10-23T18:00:00.000Z');
+  tick();await settle();assert.match(elements.get('elapsedbasis').textContent,/推定已执行：Day 18/);assert.match(elements.get('elapsedbasis').textContent,/未经执行确认/);assert.equal(elements.get('elapsed').textContent,'0.0 h');assert.equal(elements.get('challengegrid').children[0],retained);
+ }finally{Object.assign(globalThis,saved);Date.now=savedNow;}
+});
+
+function scheduledChallenge(){
+ const data=copy(challengeModel.CHALLENGE_FALLBACK);data.schema_version=2;data.updated_at='2026-10-23T04:57:10.800Z';
+ for(const day of data.days)if(day.reset)Object.assign(day.reset,{planned_deadline_at:null,planned_deadline_source_url:null});
+ for(const [day,id,published,deadline]of [[17,'2113162413008884099','2026-10-22T06:56:16.161Z','2026-10-22T18:00:00.000Z'],[18,'2113492502355562875','2026-10-23T04:47:34.010Z','2026-10-23T18:00:00.000Z']]){
+  const url='https://x.com/thsottiaux/status/'+id;
+  data.days.push({day,title_zh:'重置预告',summary_zh:'作者预告重置截止时间，尚未确认执行。',improvements:[],sources:[{url,published_at:published,time_basis:'id_inferred',role:'announcement'}],reset:{kind:'usage_reset',status:'announced',completion_source_url:null,executed_at:null,execution_source_url:null,planned_deadline_at:deadline,planned_deadline_source_url:url}});
+ }
+ return data;
+}
+test('v2 explicit sourced deadlines trigger inferred timer only at deadline without mutating facts',()=>{
+ const data=scheduledChallenge(),before=copy(data);
+ assert.equal(challengeModel.validateChallenge(data),data);
+ assert.equal(challengeModel.challengeResetView(data,Date.parse('2026-10-22T17:59:59.999Z')).anchor.day,10);
+ const at=challengeModel.challengeResetView(data,Date.parse('2026-10-22T18:00:00.000Z'));
+ assert.deepEqual(at.anchor,{day:17,at:'2026-10-22T18:00:00.000Z',basis:'announcement_deadline',url:data.days.at(-2).sources[0].url});assert.equal(at.hours,'0.0');assert.equal(at.pending.day,18);
+ const later=challengeModel.challengeResetView(data,Date.parse('2026-10-23T10:15:00.000Z'));
+ assert.equal(later.anchor.day,17);assert.equal(later.hours,'16.3');
+ const day18=challengeModel.challengeResetView(data,Date.parse('2026-10-23T18:00:00.000Z'));assert.equal(day18.anchor.day,18);assert.equal(day18.pending,null);
+ assert.deepEqual(data,before);assert.equal(challengeModel.latestReset(data).day,10,'evidence-only API never promotes inferred resets');
+});
+test('completion evidence supersedes inference for same round, newer inferred round supersedes older completion',()=>{
+ const data=scheduledChallenge(),d=data.days.at(-2),url='https://x.com/thsottiaux/status/2113162413008884100';
+ d.sources.push({url,published_at:'2026-10-22T19:00:00.000Z',time_basis:'verified',role:'completion'});
+ Object.assign(d.reset,{status:'completed',completion_source_url:url});
+ let view=challengeModel.challengeResetView(data,Date.parse('2026-10-23T10:00:00.000Z'));
+ assert.equal(view.anchor.day,17);assert.equal(view.anchor.basis,'completion_post');assert.equal(view.anchor.at,d.sources.at(-1).published_at);
+ Object.assign(d.reset,{executed_at:'2026-10-22T17:30:00.000Z',execution_source_url:url});
+ view=challengeModel.challengeResetView(data,Date.parse('2026-10-23T10:00:00.000Z'));assert.equal(view.anchor.basis,'executed');assert.equal(view.anchor.at,d.reset.executed_at);
+ assert.equal(challengeModel.challengeResetView(data,Date.parse('2026-10-23T18:01:00.000Z')).anchor.day,18);
+});
+test('unscheduled and banked announcements do not infer execution; v1 remains valid',()=>{
+ const data=scheduledChallenge();data.days.at(-2).reset.kind='banked_reset_grant';data.days.at(-1).reset.planned_deadline_at=null;data.days.at(-1).reset.planned_deadline_source_url=null;
+ assert.equal(challengeModel.challengeResetView(data,Date.parse('2026-10-24T00:00:00.000Z')).anchor.day,10);
+ assert.equal(challengeModel.validateChallenge(copy(challengeModel.CHALLENGE_FALLBACK)).schema_version,1);
+});
+for(const [name,change]of [
+ ['missing pair',d=>delete d.days.at(-1).reset.planned_deadline_source_url],
+ ['unknown field',d=>d.days.at(-1).reset.inferred=true],
+ ['invalid deadline',d=>d.days.at(-1).reset.planned_deadline_at='2026-02-30T18:00:00.000Z'],
+ ['unlinked source',d=>d.days.at(-1).reset.planned_deadline_source_url=d.days.at(-2).sources[0].url],
+ ['null mismatch',d=>d.days.at(-1).reset.planned_deadline_at=null],
+ ['deadline before source',d=>d.days.at(-1).reset.planned_deadline_at='2026-10-22T00:00:00.000Z'],
+ ['non-announcement source',d=>d.days.at(-1).sources[0].role='completion'],
+ ['v1 with v2 fields',d=>d.schema_version=1],
+ ['unknown version',d=>d.schema_version=3],
+ ['out of order days',d=>d.days.reverse()],
+ ['missing schedule source',d=>d.days.at(-1).sources=[]]
+])test('deadline contract rejects '+name,()=>assert.throws(()=>challengeModel.validateChallenge(changeDeadline(change))));
+function changeDeadline(change){const data=scheduledChallenge();change(data);return data;}

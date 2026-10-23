@@ -379,7 +379,7 @@ function challengeTime(value){
 function challengeURL(value){require(typeof value==='string'&&/^https:\/\/x\.com\/thsottiaux\/status\/[1-9][0-9]{0,24}$/.test(value));}
 function challengeText(value,max=400){text(value);scan(value);require([...value].length<=max&&!/[<>\u0000-\u001f\u007f-\u009f]/u.test(value)&&!SENSITIVE.some(p=>p.test(value)));}
 export function validateChallenge(data){
- challengeKeys(data,['schema_version','updated_at','pledge_url','days']);require(data.schema_version===1);
+ challengeKeys(data,['schema_version','updated_at','pledge_url','days']);require(data.schema_version===1||data.schema_version===2);
  const updated=challengeTime(data.updated_at);challengeURL(data.pledge_url);
  require(Array.isArray(data.days)&&data.days.length<=28);let previous=0;const allSources=new Set();
  for(const day of data.days){
@@ -396,7 +396,14 @@ export function validateChallenge(data){
   require(Array.isArray(day.improvements)&&day.improvements.length<=12);
   for(const item of day.improvements){challengeKeys(item,['text_zh','source_urls']);challengeText(item.text_zh);require(Array.isArray(item.source_urls)&&item.source_urls.length>0&&new Set(item.source_urls).size===item.source_urls.length&&item.source_urls.every(url=>sources.has(url)));}
   if(day.reset!==null){
-   const r=day.reset;challengeKeys(r,['kind','status','completion_source_url','executed_at','execution_source_url']);
+   const r=day.reset;challengeKeys(r,['kind','status','completion_source_url','executed_at','execution_source_url',...(data.schema_version===2?['planned_deadline_at','planned_deadline_source_url']:[])]);
+   if(data.schema_version===2){
+    if(r.planned_deadline_at===null)require(r.planned_deadline_source_url===null);
+    else {
+     const planned=sources.get(r.planned_deadline_source_url);require(planned?.role==='announcement');
+     require(challengeTime(r.planned_deadline_at)>=Date.parse(planned.published_at));
+    }
+   }
    enumValue(r.kind,['usage_reset','global_reset','banked_reset_grant']);enumValue(r.status,['announced','completed']);
    if(r.status==='announced')require(r.completion_source_url===null&&r.executed_at===null&&r.execution_source_url===null);
    else {
@@ -435,4 +442,33 @@ export async function loadChallenge(fetcher=globalThis.fetch,{timeoutMs=6000}={}
   return {data:remote,fallback:false};
  }catch{return {data:fallback,fallback:true};}
  finally{clearTimeout(timer);}
+}
+
+
+// Derived read model: data updates change the anchor; wall-clock ticks change hours.
+// Never persist a duration or reinterpret an announcement as execution evidence.
+export function challengeResetView(data,now=Date.now()){
+ validateChallenge(data);
+ let anchor=latestReset(data);
+ // Explicit schedule bounds are estimates, never completed facts. A newer round
+ // may replace an older completion only once its sourced deadline has passed.
+ const inferred=data.days.filter(d=>d.reset?.status==='announced'&&d.reset.kind!=='banked_reset_grant'&&d.reset.planned_deadline_at!=null&&Date.parse(d.reset.planned_deadline_at)<=now).at(-1);
+ if(inferred&&(!anchor||inferred.day>anchor.day))anchor={day:inferred.day,at:inferred.reset.planned_deadline_at,basis:'announcement_deadline',url:inferred.reset.planned_deadline_source_url};
+ const pending=data.days.filter(d=>d.reset?.status==='announced'&&d.reset.kind!=='banked_reset_grant'&&(!anchor||d.day>anchor.day)).at(-1)??null;
+ return {anchor,hours:elapsedHours(anchor,now),pending};
+}
+export function createChallengeRefresh({initial=CHALLENGE_FALLBACK,load=loadChallenge,onChange=()=>{}}={}){
+ let current={data:validateChallenge(initial),fallback:true,stale:false},inFlight=null;
+ function refresh(){
+  if(inFlight)return inFlight;
+  // Start the load synchronously, but always release the guard after settlement.
+  let request;try{request=load();}catch{request=Promise.reject(new Error('challenge_unavailable'));}
+  inFlight=Promise.resolve(request).then(result=>{
+   const data=validateChallenge(result.data);
+   if(result.fallback||Date.parse(data.updated_at)<Date.parse(current.data.updated_at)||Date.parse(data.updated_at)>Date.now()+60000){current={...current,stale:true};}
+   else current={data,fallback:false,stale:false};
+  }).catch(()=>{current={...current,stale:true};}).then(()=>{onChange(current);return current;}).finally(()=>{inFlight=null;});
+  return inFlight;
+ }
+ return {refresh};
 }

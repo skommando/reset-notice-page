@@ -1,4 +1,4 @@
-import {validateCalendar,parseCalendarJSON,announcementRecords,safeSourceURL,validateChallenge,CHALLENGE_FALLBACK,loadChallenge,challengeDayOrder,latestReset,elapsedHours} from './model.mjs';
+import {validateCalendar,parseCalendarJSON,announcementRecords,safeSourceURL,validateChallenge,CHALLENGE_FALLBACK,loadChallenge,challengeDayOrder,challengeResetView,createChallengeRefresh} from './model.mjs';
 
 const $=id=>document.getElementById(id);
 const pad=n=>String(n).padStart(2,'0');
@@ -86,15 +86,20 @@ async function load(){
 load();
 
 // Challenge is deliberately independent of the email-driven calendar load.
-let challenge=validateChallenge(CHALLENGE_FALLBACK);
+let challenge=validateChallenge(CHALLENGE_FALLBACK),renderedDays=null,renderedBasis=null;
 function refreshElapsed(){
- const anchor=latestReset(challenge),hours=elapsedHours(anchor);
+ const {anchor,hours,pending}=challengeResetView(challenge);
  $('elapsed').textContent=hours===null?'暂不可计算':`${hours} h`;
+ const basis=JSON.stringify({anchor,pending:pending?.day??null,calculable:hours!==null});
+ if(basis===renderedBasis)return;
+ renderedBasis=basis;
  $('elapsedbasis').replaceChildren();
  if(anchor&&hours!==null){
-  const link=node('a','',anchor.basis==='completion_post'?'按完成公告计算':'按实际执行时间计算');
+  $('elapsedbasis').append(node('span','',anchor.basis==='announcement_deadline'?`推定已执行：Day ${anchor.day} · `:`最近完成：Day ${anchor.day} · `));
+  const link=node('a','',anchor.basis==='announcement_deadline'?'按预告截止时间推定，未经执行确认':anchor.basis==='completion_post'?'按完成公告计算':'按实际执行时间计算');
   link.href=anchor.url;link.target='_blank';link.rel='noopener noreferrer';$('elapsedbasis').append(link);
  }
+ if(pending)$('elapsedbasis').append(node('br'),node('span','',`Day ${pending.day} 已预告，待完成确认；有明确截止时间时，到期自动按预告推定。`));
 }
 function challengeCard(day,number){
  const reset=day?.reset,completed=reset?.status==='completed',banked=reset?.kind==='banked_reset_grant';
@@ -110,16 +115,23 @@ function challengeCard(day,number){
  day.sources.forEach((source,index)=>{const link=node('a','',source.role==='completion'?'完成公告 ↗':`原帖 ${index+1} ↗`);link.href=source.url;link.target='_blank';link.rel='noopener noreferrer';links.append(link);});card.append(links);
  return card;
 }
-function renderChallenge(fallback){
+function renderChallenge(fallback,stale=false){
  const currentDay=Math.max(0,...challenge.days.map(day=>day.day));
  $('challengeprogress').textContent=currentDay?`已更新至第 ${currentDay} / 28 天`:'尚未开始 / 28 天';
- const byDay=new Map(challenge.days.map(day=>[day.day,day]));
- $('challengegrid').replaceChildren(...challengeDayOrder(challenge).map(number=>challengeCard(byDay.get(number),number)));
+ const days=JSON.stringify(challenge.days);
+ if(days!==renderedDays){
+  const grid=$('challengegrid'),focusedURL=grid.contains(document.activeElement)?document.activeElement?.href:null;
+  const byDay=new Map(challenge.days.map(day=>[day.day,day]));
+  $('challengegrid').replaceChildren(...challengeDayOrder(challenge).map(number=>challengeCard(byDay.get(number),number)));
+  renderedDays=days;
+  if(focusedURL)Array.from(grid.querySelectorAll('a')).find(link=>link.href===focusedURL)?.focus({preventScroll:true});
+ }
  const date=new Date(Date.parse(challenge.updated_at)+8*3600000).toISOString().slice(0,16).replace('T',' ');
- $('challengestatus').textContent=`截至 ${date} UTC+8${fallback?' · 离线快照':''}`;
+ $('challengestatus').textContent=`截至 ${date} UTC+8${fallback?' · 离线快照':''}${stale?' · 更新暂不可用，保留上次资料':''}`;
  refreshElapsed();
 }
 renderChallenge(true);
-loadChallenge().then(result=>{challenge=result.data;renderChallenge(result.fallback);});
-setInterval(refreshElapsed,60000);
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshElapsed();});
+const challengeRefresh=createChallengeRefresh({initial:challenge,load:loadChallenge,onChange:result=>{challenge=result.data;renderChallenge(result.fallback,result.stale);}});
+challengeRefresh.refresh();
+setInterval(()=>{refreshElapsed();if(!document.hidden)challengeRefresh.refresh();},60000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){refreshElapsed();challengeRefresh.refresh();}});
