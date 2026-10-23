@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-23T04:48:21.684Z",
+  "updated_at": "2026-10-23T04:57:10.800Z",
   "pledge_url": "https://x.com/thsottiaux/status/2106845241357824205",
   "days": [
     {
@@ -566,7 +566,7 @@
     {
       "day": 18,
       "title_zh": "四项进展与重置公告",
-      "summary_zh": "Decisions API 正式开放、OpenResponses 加入 Linux 基金会、性能改进已发布，并宣布 Uber 全面采用 Codex 与 Work；同帖宣布重置，执行时刻及完成状态未明确。",
+      "summary_zh": "Decisions API 正式开放、OpenResponses 加入 Linux 基金会、性能改进已发布，并宣布 Uber 全面采用 Codex 与 Work；另预告重置及一个小更新在 UTC+8 2026年10月24日02:00前落地（按原文 PST 换算），尚未确认完成。",
       "improvements": [
         {
           "text_zh": "Decisions API 达到正式可用（GA）状态。",
@@ -591,12 +591,24 @@
           "source_urls": [
             "https://x.com/thsottiaux/status/2113492187770175603"
           ]
+        },
+        {
+          "text_zh": "随后预告会伴随一个小更新落地，具体功能未说明；这是预告，不标为已发布。",
+          "source_urls": [
+            "https://x.com/thsottiaux/status/2113492502355562875"
+          ]
         }
       ],
       "sources": [
         {
           "url": "https://x.com/thsottiaux/status/2113492187770175603",
           "published_at": "2026-10-23T04:46:19.007Z",
+          "time_basis": "id_inferred",
+          "role": "announcement"
+        },
+        {
+          "url": "https://x.com/thsottiaux/status/2113492502355562875",
+          "published_at": "2026-10-23T04:47:34.010Z",
           "time_basis": "id_inferred",
           "role": "announcement"
         }
