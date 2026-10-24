@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-10-23T04:57:10.800Z",
+  "updated_at": "2026-10-24T00:06:40.361Z",
   "pledge_url": "https://x.com/thsottiaux/status/2106845241357824205",
   "days": [
     {
@@ -638,6 +638,52 @@
         "planned_deadline_at": "2026-10-23T18:00:00.000Z",
         "planned_deadline_source_url": "https://x.com/thsottiaux/status/2113492502355562875"
       }
+    },
+    {
+      "day": 19,
+      "title_zh": "通话提速、缓存保留与 CLI 更新",
+      "summary_zh": "dot 通话连接更快，Codex 与 Work 对话中调整推理设置不再使缓存失效；Codex CLI 增加预设与企业功能并修复会话恢复问题。",
+      "improvements": [
+        {
+          "text_zh": "dot 通话连接速度显著提升。",
+          "source_urls": [
+            "https://x.com/thsottiaux/status/2113770573994299544"
+          ]
+        },
+        {
+          "text_zh": "在 Codex 与 Work 对话中调整推理设置，不再导致缓存失效。",
+          "source_urls": [
+            "https://x.com/thsottiaux/status/2113770573994299544"
+          ]
+        },
+        {
+          "text_zh": "Codex CLI 新增可复用提示预设、内联模型与权限设置，以及企业 MCP 登录。",
+          "source_urls": [
+            "https://x.com/thsottiaux/status/2113770862860222611"
+          ]
+        },
+        {
+          "text_zh": "修复 Codex CLI 恢复长会话时的失败，并新增 Windows 企业代理认证支持。",
+          "source_urls": [
+            "https://x.com/thsottiaux/status/2113770862860222611"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "url": "https://x.com/thsottiaux/status/2113770573994299544",
+          "published_at": "2026-10-23T23:12:31.455Z",
+          "time_basis": "id_inferred",
+          "role": "announcement"
+        },
+        {
+          "url": "https://x.com/thsottiaux/status/2113770862860222611",
+          "published_at": "2026-10-23T23:13:40.326Z",
+          "time_basis": "id_inferred",
+          "role": "announcement"
+        }
+      ],
+      "reset": null
     }
   ]
 }
