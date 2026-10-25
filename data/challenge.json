@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-10-25T04:00:38.509Z",
+  "updated_at": "2026-10-25T07:00:03.362Z",
   "pledge_url": "https://x.com/thsottiaux/status/2106845241357824205",
   "days": [
     {
@@ -687,8 +687,8 @@
     },
     {
       "day": 20,
-      "title_zh": "休息日用量重置预告",
-      "summary_zh": "作者宣布 Day 20 为休息与重置日，并在同帖回复“By midnight PST”；按发帖时刻及原文 PST 换算，计划截止为 UTC+8 2026年10月25日16:00，尚未确认完成，实际执行时间与具体适用范围未说明。",
+      "title_zh": "休息日用量重置完成",
+      "summary_zh": "作者预告 Day 20 重置最迟于 UTC+8 2026年10月25日16:00落地，随后引用该预告确认已全部传播。本轮重置已完成，实际执行时间及具体适用范围未说明；计时按完成公告发布时间计算。",
       "improvements": [],
       "sources": [
         {
@@ -702,12 +702,18 @@
           "published_at": "2026-10-25T03:40:04.049Z",
           "time_basis": "id_inferred",
           "role": "announcement"
+        },
+        {
+          "url": "https://x.com/thsottiaux/status/2114237083652882932",
+          "published_at": "2026-10-25T06:06:16.025Z",
+          "time_basis": "id_inferred",
+          "role": "completion"
         }
       ],
       "reset": {
         "kind": "usage_reset",
-        "status": "announced",
-        "completion_source_url": null,
+        "status": "completed",
+        "completion_source_url": "https://x.com/thsottiaux/status/2114237083652882932",
         "executed_at": null,
         "execution_source_url": null,
         "planned_deadline_at": "2026-10-25T08:00:00.000Z",
