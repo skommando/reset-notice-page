@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-10-26T05:24:40.015Z",
+  "updated_at": "2026-10-26T20:30:54.193Z",
   "pledge_url": "https://x.com/thsottiaux/status/2106845241357824205",
   "days": [
     {
@@ -742,6 +742,40 @@
         "planned_deadline_at": null,
         "planned_deadline_source_url": null
       }
+    },
+    {
+      "day": 22,
+      "title_zh": "Terra 回归与用量提升",
+      "summary_zh": "Terra 回归，作者强调写作、个性表达与细致理解请求的能力提升，并称其擅长电脑操作，相比 6.1 Sol，API 与订阅均可获得 2X 用量；本帖未宣布重置。",
+      "improvements": [
+        {
+          "text_zh": "作者称这是首个在写作、个性表达及细致理解请求方面显著更好的模型。",
+          "source_urls": [
+            "https://x.com/thsottiaux/status/2114800277677092936"
+          ]
+        },
+        {
+          "text_zh": "作者称其整体能力强、擅长电脑操作（computer use）。",
+          "source_urls": [
+            "https://x.com/thsottiaux/status/2114800277677092936"
+          ]
+        },
+        {
+          "text_zh": "作者称，相比 6.1 Sol，API 与订阅均可获得 2X 用量；原帖未进一步说明具体套餐或计量口径，不等同于一次额度重置。",
+          "source_urls": [
+            "https://x.com/thsottiaux/status/2114800277677092936"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "url": "https://x.com/thsottiaux/status/2114800277677092936",
+          "published_at": "2026-10-26T19:24:11.944Z",
+          "time_basis": "id_inferred",
+          "role": "announcement"
+        }
+      ],
+      "reset": null
     }
   ]
 }
