@@ -458,9 +458,12 @@ export function challengeResetView(data,now=Date.now()){
  const inferred=data.days.filter(d=>d.reset?.status==='announced'&&d.reset.kind!=='banked_reset_grant'&&d.reset.planned_deadline_at!=null&&Date.parse(d.reset.planned_deadline_at)<=now).at(-1);
  if(inferred&&(!anchor||inferred.day>anchor.day))anchor={day:inferred.day,at:inferred.reset.planned_deadline_at,basis:'announcement_deadline',url:inferred.reset.planned_deadline_source_url};
  const manual=MANUAL_RESET_ESTIMATE,round=data.days.find(d=>d.day===manual.day);
+ // Once this round or a later round completes, late posts from older rounds
+ // must not move the display back behind the manual clock they superseded.
+ const completedRound=data.days.filter(d=>d.day>=manual.day&&d.reset?.status==='completed'&&d.reset.kind!=='banked_reset_grant').at(-1);
+ if(data.pledge_url===CHALLENGE_FALLBACK.pledge_url&&completedRound&&(!anchor||anchor.day<completedRound.day))anchor=latestReset({...data,days:[completedRound]});
  const matchesRound=round?round.reset?.status==='announced'&&round.reset.kind!=='banked_reset_grant'&&round.sources.some(s=>s.url===manual.url&&s.role==='announcement'&&Date.parse(s.published_at)<=Date.parse(manual.at)):data.days.every(d=>d.day<manual.day);
- const superseded=data.days.some(d=>d.day>=manual.day&&d.reset?.status==='completed'&&d.reset.kind!=='banked_reset_grant');
- if(data.pledge_url===CHALLENGE_FALLBACK.pledge_url&&matchesRound&&!superseded&&Date.parse(manual.at)<=now&&(!anchor||anchor.day<manual.day))anchor=manual;
+ if(data.pledge_url===CHALLENGE_FALLBACK.pledge_url&&matchesRound&&Date.parse(manual.at)<=now&&(!anchor||anchor.day<manual.day))anchor=manual;
  const pending=data.days.filter(d=>d.reset?.status==='announced'&&d.reset.kind!=='banked_reset_grant'&&(!anchor||d.day>anchor.day||anchor.basis==='manual_estimate'&&d.day===anchor.day)).at(-1)??null;
  return {anchor,hours:elapsedHours(anchor,now),pending};
 }

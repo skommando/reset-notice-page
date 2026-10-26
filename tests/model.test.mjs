@@ -560,5 +560,19 @@ test('manual estimate never overrides later completed round even when an older c
  const data=manualEstimateChallenge(),later=copy(data.days.at(-1)),url='https://x.com/thsottiaux/status/2114588174249071103';
  later.day=22;later.sources=[{url,published_at:'2026-10-26T06:10:00.000Z',time_basis:'verified',role:'completion'}];Object.assign(later.reset,{status:'completed',completion_source_url:url});data.days.push(later);
  const older=data.days[9];older.sources.find(s=>s.role==='completion').published_at='2026-10-26T06:20:00.000Z';data.updated_at='2026-10-26T06:21:00.000Z';
- assert.notEqual(challengeModel.challengeResetView(data,manualNow).anchor.basis,'manual_estimate');
+ const view=challengeModel.challengeResetView(data,manualNow);
+ assert.equal(view.anchor.basis,'completion_post');assert.equal(view.anchor.day,22);assert.equal(view.anchor.at,later.sources[0].published_at);
+});
+test('refresh retains manual and then official clock across repeated, offline, fallback and stale responses',async()=>{
+ const data=manualEstimateChallenge();let candidate={data,fallback:false};
+ const refresh=challengeModel.createChallengeRefresh({load:async()=>{if(candidate instanceof Error)throw candidate;return candidate;}});
+ const view=async()=>challengeModel.challengeResetView((await refresh.refresh()).data,manualNow);
+ for(const response of [candidate,candidate,new Error('offline'),{data:challengeModel.CHALLENGE_FALLBACK,fallback:true},{data:challengeModel.CHALLENGE_FALLBACK,fallback:false}]){
+  candidate=response;const current=await view();assert.equal(current.anchor.basis,'manual_estimate');assert.equal(current.hours,'1.0');
+ }
+ const completed=copy(data),day=completed.days.at(-1),url='https://x.com/thsottiaux/status/2114588174249071103';
+ day.sources.push({url,published_at:'2026-10-26T06:38:00.000Z',time_basis:'verified',role:'completion'});Object.assign(day.reset,{status:'completed',completion_source_url:url});completed.updated_at='2026-10-26T06:39:00.000Z';
+ for(const response of [{data:completed,fallback:false},{data:completed,fallback:false},new Error('offline'),{data:challengeModel.CHALLENGE_FALLBACK,fallback:true},{data,fallback:false}]){
+  candidate=response;const current=await view();assert.equal(current.anchor.basis,'completion_post');assert.equal(current.hours,'0.5');
+ }
 });
