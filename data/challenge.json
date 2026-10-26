@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-10-25T07:00:03.362Z",
+  "updated_at": "2026-10-26T05:24:40.015Z",
   "pledge_url": "https://x.com/thsottiaux/status/2106845241357824205",
   "days": [
     {
@@ -718,6 +718,29 @@
         "execution_source_url": null,
         "planned_deadline_at": "2026-10-25T08:00:00.000Z",
         "planned_deadline_source_url": "https://x.com/thsottiaux/status/2114200291319124163"
+      }
+    },
+    {
+      "day": 21,
+      "title_zh": "用量重置预告",
+      "summary_zh": "作者明确标注 Day 21，表示今天为重置日，并提到剩余七天；尚未确认完成，具体执行时间、截止时间、适用范围及条件未说明。",
+      "improvements": [],
+      "sources": [
+        {
+          "url": "https://x.com/thsottiaux/status/2114588174249071102",
+          "published_at": "2026-10-26T05:21:22.546Z",
+          "time_basis": "id_inferred",
+          "role": "announcement"
+        }
+      ],
+      "reset": {
+        "kind": "usage_reset",
+        "status": "announced",
+        "completion_source_url": null,
+        "executed_at": null,
+        "execution_source_url": null,
+        "planned_deadline_at": null,
+        "planned_deadline_source_url": null
       }
     }
   ]
