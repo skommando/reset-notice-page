@@ -95,8 +95,10 @@ function refreshElapsed(){
  renderedBasis=basis;
  $('elapsedbasis').replaceChildren();
  if(anchor&&hours!==null){
-  $('elapsedbasis').append(node('span','',anchor.basis==='announcement_deadline'?`推定已执行：Day ${anchor.day} · `:`最近完成：Day ${anchor.day} · `));
-  const link=node('a','',anchor.basis==='announcement_deadline'?'按预告截止时间推定，未经执行确认':anchor.basis==='completion_post'?'按完成公告计算':'按实际执行时间计算');
+  const manual=anchor.basis==='manual_estimate';
+  const estimatedAt=manual?new Date(Date.parse(anchor.at)+8*3600000).toISOString().slice(0,16).replace('T',' '):null;
+  $('elapsedbasis').append(node('span','',manual?`手动估算、非官方确认：Day ${anchor.day} · ${estimatedAt} UTC+8 · `:anchor.basis==='announcement_deadline'?`推定已执行：Day ${anchor.day} · `:`最近完成：Day ${anchor.day} · `));
+  const link=node('a','',manual?'预告原帖（不含估算时间）':anchor.basis==='announcement_deadline'?'按预告截止时间推定，未经执行确认':anchor.basis==='completion_post'?'按完成公告计算':'按实际执行时间计算');
   link.href=anchor.url;link.target='_blank';link.rel='noopener noreferrer';$('elapsedbasis').append(link);
  }
  if(pending)$('elapsedbasis').append(node('br'),node('span','',`Day ${pending.day} 已预告，待完成确认；有明确截止时间时，到期自动按预告推定。`));

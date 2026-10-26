@@ -423,6 +423,7 @@ test('visible minute ticks and visibility restoration refresh data, while elapse
 
 test('app lifecycle refreshes changed data without reload, ignores hidden polling and survives network failure',async()=>{
  const saved={document:globalThis.document,fetch:globalThis.fetch,setInterval:globalThis.setInterval};const savedNow=Date.now;
+ Date.now=()=>Date.parse('2026-10-24T00:00:00.000Z');
  const elements=new Map(),events=new Map();let tick,requests=0,offline=false;
  class Element{constructor(){this.children=[];this.dataset={};this.classList={add(){}};}append(...nodes){this.children.push(...nodes);}replaceChildren(...nodes){this.children=nodes;}setAttribute(){}addEventListener(){}contains(node){return node===this||this.children.some(child=>child.contains?.(node));}focus(){document.activeElement=this;}querySelectorAll(selector){return this.children.flatMap(child=>[...(selector==='a'&&child.href?[child]:[]),...child.querySelectorAll(selector)]);}get textContent(){return (this.text??'')+this.children.map(n=>n.textContent??'').join('');}set textContent(value){this.text=value;this.children=[];}}
  const data=copy(challengeModel.CHALLENGE_FALLBACK);
@@ -449,6 +450,19 @@ test('app lifecycle refreshes changed data without reload, ignores hidden pollin
   tick();await settle();assert.match(elements.get('elapsedbasis').textContent,/推定已执行：Day 17/);
   const retained=elements.get('challengegrid').children[0];offline=true;clock=Date.parse('2026-10-23T18:00:00.000Z');
   tick();await settle();assert.match(elements.get('elapsedbasis').textContent,/推定已执行：Day 18/);assert.match(elements.get('elapsedbasis').textContent,/未经执行确认/);assert.equal(elements.get('elapsed').textContent,'0.0 h');assert.equal(elements.get('challengegrid').children[0],retained);
+  Object.assign(data,manualEstimateChallenge());clock=manualNow;offline=false;
+  tick();await settle();
+  assert.match(elements.get('elapsedbasis').textContent,/手动估算、非官方确认/);
+  assert.match(elements.get('elapsedbasis').textContent,/2026-10-26 14:08 UTC\+8/);
+  assert.match(elements.get('elapsedbasis').textContent,/预告原帖（不含估算时间）/);
+  assert.doesNotMatch(elements.get('elapsedbasis').textContent,/最近完成：Day 21/);
+  assert.match(elements.get('elapsedbasis').textContent,/Day 21 已预告，待完成确认/);
+  assert.equal(elements.get('elapsed').textContent,'1.0 h');
+  const estimatedCard=grid.children[0];offline=true;clock+=3600000;
+  tick();await settle();assert.equal(elements.get('elapsed').textContent,'2.0 h');assert.match(elements.get('elapsedbasis').textContent,/手动估算、非官方确认/);assert.equal(grid.children[0],estimatedCard);
+  offline=false;const day21=data.days.at(-1),completion='https://x.com/thsottiaux/status/2114588174249071103';
+  day21.sources.push({url:completion,published_at:'2026-10-26T07:30:00.000Z',time_basis:'verified',role:'completion'});Object.assign(day21.reset,{status:'completed',completion_source_url:completion});data.updated_at='2026-10-26T07:31:00.000Z';
+  events.get('visibilitychange')();await settle();assert.match(elements.get('elapsedbasis').textContent,/最近完成：Day 21/);assert.doesNotMatch(elements.get('elapsedbasis').textContent,/手动估算/);
  }finally{Object.assign(globalThis,saved);Date.now=savedNow;}
 });
 
@@ -501,3 +515,50 @@ for(const [name,change]of [
  ['missing schedule source',d=>d.days.at(-1).sources=[]]
 ])test('deadline contract rejects '+name,()=>assert.throws(()=>challengeModel.validateChallenge(changeDeadline(change))));
 function changeDeadline(change){const data=scheduledChallenge();change(data);return data;}
+
+function manualEstimateChallenge(){
+ const data=scheduledChallenge();data.updated_at='2026-10-26T06:09:00.000Z';
+ data.days.push({day:21,title_zh:'用量重置预告',summary_zh:'今天为重置日，尚未确认完成。',improvements:[],sources:[{url:'https://x.com/thsottiaux/status/2114588174249071102',published_at:'2026-10-26T05:21:22.546Z',time_basis:'id_inferred',role:'announcement'}],reset:{kind:'usage_reset',status:'announced',completion_source_url:null,executed_at:null,execution_source_url:null,planned_deadline_at:null,planned_deadline_source_url:null}});
+ return data;
+}
+const manualNow=Date.parse('2026-10-26T07:08:00.000Z');
+test('manual estimate starts at approved time, keeps official facts and pending confirmation separate',()=>{
+ const data=manualEstimateChallenge(),before=copy(data);
+ assert.notEqual(challengeModel.challengeResetView(data,Date.parse('2026-10-26T06:07:59.999Z')).anchor.basis,'manual_estimate');
+ const view=challengeModel.challengeResetView(data,manualNow);
+ assert.deepEqual(view.anchor,{day:21,at:'2026-10-26T06:08:00.000Z',basis:'manual_estimate',url:data.days.at(-1).sources[0].url});
+ assert.equal(view.hours,'1.0');assert.equal(view.pending.day,21);
+ assert.equal(challengeModel.challengeResetView(data,Date.parse(view.anchor.at)).hours,'0.0');
+ assert.deepEqual(data,before);assert.equal(challengeModel.latestReset(data).day,10);
+ assert.equal(challengeModel.validateChallenge(data),data);
+});
+test('manual estimate remains available with old offline snapshot and advancing data timestamps',()=>{
+ const fallback=copy(challengeModel.CHALLENGE_FALLBACK);
+ assert.equal(challengeModel.challengeResetView(fallback,manualNow).anchor.basis,'manual_estimate');
+ const data=manualEstimateChallenge();data.updated_at='2026-10-26T07:00:00.000Z';
+ assert.equal(challengeModel.challengeResetView(data,manualNow).hours,'1.0');
+ for(const change of [d=>d.days.at(-1).reset.kind='banked_reset_grant',d=>d.days.at(-1).reset=null,d=>d.days.at(-1).sources[0].url='https://x.com/thsottiaux/status/123']){
+  const changed=copy(data);change(changed);assert.notEqual(challengeModel.challengeResetView(changed,manualNow).anchor.basis,'manual_estimate');
+ }
+});
+test('same round completion or later round timer evidence supersedes manual estimate',()=>{
+ const data=manualEstimateChallenge(),day=data.days.at(-1),url='https://x.com/thsottiaux/status/2114588174249071103';
+ day.sources.push({url,published_at:'2026-10-26T06:00:00.000Z',time_basis:'verified',role:'completion'});
+ Object.assign(day.reset,{status:'completed',completion_source_url:url});
+ let view=challengeModel.challengeResetView(data,manualNow);assert.equal(view.anchor.basis,'completion_post');assert.equal(view.anchor.at,day.sources.at(-1).published_at);
+ Object.assign(day.reset,{executed_at:'2026-10-26T05:59:00.000Z',execution_source_url:url});
+ assert.equal(challengeModel.challengeResetView(data,manualNow).anchor.basis,'executed');
+ const next=manualEstimateChallenge(),newDay=copy(next.days.at(-1));newDay.day=22;newDay.sources[0].url=url;newDay.sources[0].published_at='2026-10-26T06:30:00.000Z';
+ next.days.push(newDay);next.updated_at='2026-10-26T07:01:00.000Z';view=challengeModel.challengeResetView(next,manualNow);
+ assert.equal(view.anchor.basis,'manual_estimate');assert.equal(view.pending.day,22);
+ Object.assign(newDay.reset,{planned_deadline_at:'2026-10-26T07:00:00.000Z',planned_deadline_source_url:url});
+ next.updated_at='2026-10-26T07:01:00.000Z';assert.equal(challengeModel.challengeResetView(next,manualNow).anchor.day,22);
+ Object.assign(newDay.reset,{status:'completed',completion_source_url:url});newDay.sources[0].role='completion';newDay.reset.planned_deadline_at=null;newDay.reset.planned_deadline_source_url=null;
+ assert.equal(challengeModel.challengeResetView(next,manualNow).anchor.basis,'completion_post');
+});
+test('manual estimate never overrides later completed round even when an older completion was posted later',()=>{
+ const data=manualEstimateChallenge(),later=copy(data.days.at(-1)),url='https://x.com/thsottiaux/status/2114588174249071103';
+ later.day=22;later.sources=[{url,published_at:'2026-10-26T06:10:00.000Z',time_basis:'verified',role:'completion'}];Object.assign(later.reset,{status:'completed',completion_source_url:url});data.days.push(later);
+ const older=data.days[9];older.sources.find(s=>s.role==='completion').published_at='2026-10-26T06:20:00.000Z';data.updated_at='2026-10-26T06:21:00.000Z';
+ assert.notEqual(challengeModel.challengeResetView(data,manualNow).anchor.basis,'manual_estimate');
+});

@@ -447,6 +447,9 @@ export async function loadChallenge(fetcher=globalThis.fetch,{timeoutMs=6000}={}
 
 // Derived read model: data updates change the anchor; wall-clock ticks change hours.
 // Never persist a duration or reinterpret an announcement as execution evidence.
+// User-approved estimate lives in the frontend, outside the hourly evidence feed.
+// The linked post identifies the round; it does not confirm this estimated time.
+const MANUAL_RESET_ESTIMATE=Object.freeze({day:21,at:'2026-10-26T06:08:00.000Z',basis:'manual_estimate',url:'https://x.com/thsottiaux/status/2114588174249071102'});
 export function challengeResetView(data,now=Date.now()){
  validateChallenge(data);
  let anchor=latestReset(data);
@@ -454,7 +457,11 @@ export function challengeResetView(data,now=Date.now()){
  // may replace an older completion only once its sourced deadline has passed.
  const inferred=data.days.filter(d=>d.reset?.status==='announced'&&d.reset.kind!=='banked_reset_grant'&&d.reset.planned_deadline_at!=null&&Date.parse(d.reset.planned_deadline_at)<=now).at(-1);
  if(inferred&&(!anchor||inferred.day>anchor.day))anchor={day:inferred.day,at:inferred.reset.planned_deadline_at,basis:'announcement_deadline',url:inferred.reset.planned_deadline_source_url};
- const pending=data.days.filter(d=>d.reset?.status==='announced'&&d.reset.kind!=='banked_reset_grant'&&(!anchor||d.day>anchor.day)).at(-1)??null;
+ const manual=MANUAL_RESET_ESTIMATE,round=data.days.find(d=>d.day===manual.day);
+ const matchesRound=round?round.reset?.status==='announced'&&round.reset.kind!=='banked_reset_grant'&&round.sources.some(s=>s.url===manual.url&&s.role==='announcement'&&Date.parse(s.published_at)<=Date.parse(manual.at)):data.days.every(d=>d.day<manual.day);
+ const superseded=data.days.some(d=>d.day>=manual.day&&d.reset?.status==='completed'&&d.reset.kind!=='banked_reset_grant');
+ if(data.pledge_url===CHALLENGE_FALLBACK.pledge_url&&matchesRound&&!superseded&&Date.parse(manual.at)<=now&&(!anchor||anchor.day<manual.day))anchor=manual;
+ const pending=data.days.filter(d=>d.reset?.status==='announced'&&d.reset.kind!=='banked_reset_grant'&&(!anchor||d.day>anchor.day||anchor.basis==='manual_estimate'&&d.day===anchor.day)).at(-1)??null;
  return {anchor,hours:elapsedHours(anchor,now),pending};
 }
 export function createChallengeRefresh({initial=CHALLENGE_FALLBACK,load=loadChallenge,onChange=()=>{}}={}){
