@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-10-26T20:30:54.193Z",
+  "updated_at": "2026-10-28T02:52:43.847Z",
   "pledge_url": "https://x.com/thsottiaux/status/2106845241357824205",
   "days": [
     {
@@ -776,6 +776,35 @@
         }
       ],
       "reset": null
+    },
+    {
+      "day": 23,
+      "title_zh": "用量重置预告与午夜截止",
+      "summary_zh": "作者明确标注 Day 23，宣布今天为重置日，并在同线程补充最迟于午夜 PST 落地；按发帖日期及原文 PST 换算，上界为 UTC+8 2026年10月28日16:00。尚未确认完成，实际执行时间、适用范围及条件未说明；iCloud 插件是玩笑，并非发布公告。",
+      "improvements": [],
+      "sources": [
+        {
+          "url": "https://x.com/thsottiaux/status/2115273064481218829",
+          "published_at": "2026-10-28T02:42:53.102Z",
+          "time_basis": "id_inferred",
+          "role": "announcement"
+        },
+        {
+          "url": "https://x.com/thsottiaux/status/2115273253711409208",
+          "published_at": "2026-10-28T02:43:38.218Z",
+          "time_basis": "id_inferred",
+          "role": "announcement"
+        }
+      ],
+      "reset": {
+        "kind": "usage_reset",
+        "status": "announced",
+        "completion_source_url": null,
+        "executed_at": null,
+        "execution_source_url": null,
+        "planned_deadline_at": "2026-10-28T08:00:00.000Z",
+        "planned_deadline_source_url": "https://x.com/thsottiaux/status/2115273253711409208"
+      }
     }
   ]
 }
