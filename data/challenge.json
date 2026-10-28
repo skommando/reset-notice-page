@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-10-28T02:52:43.847Z",
+  "updated_at": "2026-10-28T06:56:57.000Z",
   "pledge_url": "https://x.com/thsottiaux/status/2106845241357824205",
   "days": [
     {
@@ -779,8 +779,8 @@
     },
     {
       "day": 23,
-      "title_zh": "用量重置预告与午夜截止",
-      "summary_zh": "作者明确标注 Day 23，宣布今天为重置日，并在同线程补充最迟于午夜 PST 落地；按发帖日期及原文 PST 换算，上界为 UTC+8 2026年10月28日16:00。尚未确认完成，实际执行时间、适用范围及条件未说明；iCloud 插件是玩笑，并非发布公告。",
+      "title_zh": "用量重置完成",
+      "summary_zh": "作者明确确认 Day 23 重置已完成，并引用此前午夜 PST 的截止预告。实际执行时刻、适用用户、套餐及额度池仍未说明；按完成公告时间计算经过小时，不把公告发布时间当作执行时间。关于明天的好消息尚无具体内容。",
       "improvements": [],
       "sources": [
         {
@@ -794,12 +794,18 @@
           "published_at": "2026-10-28T02:43:38.218Z",
           "time_basis": "id_inferred",
           "role": "announcement"
+        },
+        {
+          "url": "https://x.com/thsottiaux/status/2115330127886463244",
+          "published_at": "2026-10-28T06:29:38.078Z",
+          "time_basis": "id_inferred",
+          "role": "completion"
         }
       ],
       "reset": {
         "kind": "usage_reset",
-        "status": "announced",
-        "completion_source_url": null,
+        "status": "completed",
+        "completion_source_url": "https://x.com/thsottiaux/status/2115330127886463244",
         "executed_at": null,
         "execution_source_url": null,
         "planned_deadline_at": "2026-10-28T08:00:00.000Z",
