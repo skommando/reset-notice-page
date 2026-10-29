@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-10-28T06:56:57.000Z",
+  "updated_at": "2026-10-29T03:29:15.000Z",
   "pledge_url": "https://x.com/thsottiaux/status/2106845241357824205",
   "days": [
     {
@@ -811,6 +811,34 @@
         "planned_deadline_at": "2026-10-28T08:00:00.000Z",
         "planned_deadline_source_url": "https://x.com/thsottiaux/status/2115273253711409208"
       }
+    },
+    {
+      "day": 24,
+      "title_zh": "短信联系 dot",
+      "summary_zh": "支持像给联系人发短信一样联系 dot，可分享或转发内容、发送语音留言，也可通过 Siri 发短信下达请求。作者将其列为 Day 24 改进，未宣布额度重置。",
+      "improvements": [
+        {
+          "text_zh": "可通过短信联系 dot，方便分享或转发内容。",
+          "source_urls": [
+            "https://x.com/thsottiaux/status/2115622002581188681"
+          ]
+        },
+        {
+          "text_zh": "支持发送语音留言；也可让 Siri 给 dot 发短信以提出请求。",
+          "source_urls": [
+            "https://x.com/thsottiaux/status/2115622002581188681"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "url": "https://x.com/thsottiaux/status/2115622002581188681",
+          "published_at": "2026-10-29T01:49:26.428Z",
+          "time_basis": "id_inferred",
+          "role": "announcement"
+        }
+      ],
+      "reset": null
     }
   ]
 }
