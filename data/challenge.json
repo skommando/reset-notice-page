@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-10-29T18:03:00.000Z",
+  "updated_at": "2026-10-29T20:06:45.666Z",
   "pledge_url": "https://x.com/thsottiaux/status/2106845241357824205",
   "days": [
     {
@@ -843,7 +843,7 @@
     {
       "day": 25,
       "title_zh": "用量额度与 Pro 200 条件调整",
-      "summary_zh": "作者宣布 Pro 100/200/500 与 Business Premium 的全部用量上限翻倍、今日生效；同时明确取消 Pro 200 降额，Work 和 Codex 用量保持不变。dot 暂继续享有扩展额度，并与默认用量独立计算；未宣布重置。 随后确认 500 美元套餐为 50 倍用量，未说明比较基准。",
+      "summary_zh": "作者宣布 Pro 100/200/500 与 Business Premium 的全部用量上限翻倍、今日生效；同时明确取消 Pro 200 降额，Work 和 Codex 用量保持不变。dot 暂继续享有扩展额度，并与默认用量独立计算；未宣布重置。 随后确认 500 美元套餐为 50 倍用量，未说明比较基准。 另转引 Andrew 启动应用简洁性与性能改进冲刺并征集反馈，尚非交付确认。",
       "improvements": [
         {
           "text_zh": "宣布 Pro 100/200/500 与 Business Premium 的全部用量上限翻倍，原文为今日生效，未给出明确时区与生效时刻。",
@@ -868,6 +868,12 @@
           "source_urls": [
             "https://x.com/thsottiaux/status/2115851811576053881"
           ]
+        },
+        {
+          "text_zh": "Tibo 引用 Andrew 的帖子并请用户向他反馈；被引用内容称已启动提升应用简洁性与性能的集中改进冲刺，由 Andrew 负责。此为启动与反馈征集，不代表改进已经交付。",
+          "source_urls": [
+            "https://x.com/thsottiaux/status/2115890336107233347"
+          ]
         }
       ],
       "sources": [
@@ -880,6 +886,12 @@
         {
           "url": "https://x.com/thsottiaux/status/2115851811576053881",
           "published_at": "2026-10-29T17:02:37.162Z",
+          "time_basis": "id_inferred",
+          "role": "announcement"
+        },
+        {
+          "url": "https://x.com/thsottiaux/status/2115890336107233347",
+          "published_at": "2026-10-29T19:35:42.126Z",
           "time_basis": "id_inferred",
           "role": "announcement"
         }
