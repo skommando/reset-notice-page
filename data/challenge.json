@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-10-29T17:01:38.000Z",
+  "updated_at": "2026-10-29T18:03:00.000Z",
   "pledge_url": "https://x.com/thsottiaux/status/2106845241357824205",
   "days": [
     {
@@ -843,7 +843,7 @@
     {
       "day": 25,
       "title_zh": "用量额度与 Pro 200 条件调整",
-      "summary_zh": "作者宣布 Pro 100/200/500 与 Business Premium 的全部用量上限翻倍、今日生效；同时明确取消 Pro 200 降额，Work 和 Codex 用量保持不变。dot 暂继续享有扩展额度，并与默认用量独立计算；未宣布重置。",
+      "summary_zh": "作者宣布 Pro 100/200/500 与 Business Premium 的全部用量上限翻倍、今日生效；同时明确取消 Pro 200 降额，Work 和 Codex 用量保持不变。dot 暂继续享有扩展额度，并与默认用量独立计算；未宣布重置。 随后确认 500 美元套餐为 50 倍用量，未说明比较基准。",
       "improvements": [
         {
           "text_zh": "宣布 Pro 100/200/500 与 Business Premium 的全部用量上限翻倍，原文为今日生效，未给出明确时区与生效时刻。",
@@ -862,12 +862,24 @@
           "source_urls": [
             "https://x.com/thsottiaux/status/2115850175868727621"
           ]
+        },
+        {
+          "text_zh": "作者以“Yes”确认关于 500 美元套餐获得 50 倍用量的提问；该问答未说明比较基准、周期额度数值或精确生效时刻。",
+          "source_urls": [
+            "https://x.com/thsottiaux/status/2115851811576053881"
+          ]
         }
       ],
       "sources": [
         {
           "url": "https://x.com/thsottiaux/status/2115850175868727621",
           "published_at": "2026-10-29T16:56:07.179Z",
+          "time_basis": "id_inferred",
+          "role": "announcement"
+        },
+        {
+          "url": "https://x.com/thsottiaux/status/2115851811576053881",
+          "published_at": "2026-10-29T17:02:37.162Z",
           "time_basis": "id_inferred",
           "role": "announcement"
         }
