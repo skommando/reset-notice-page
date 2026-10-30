@@ -7,6 +7,16 @@ import {fileURLToPath} from 'node:url';
 import {spawnSync} from 'node:child_process';
 const root=fileURLToPath(new URL('../',import.meta.url));
 const script=join(root,'scripts/validate-public.mjs');
+test('favicon embeds the verified Tibo avatar without an external request or new package path',async()=>{
+ const {createHash}=await import('node:crypto');
+ const html=readFileSync(join(root,'index.html'),'utf8');
+ const icons=[...html.matchAll(/<link rel="icon" type="image\/jpeg" sizes="400x400" href="data:image\/jpeg;base64,([A-Za-z0-9+/=]+)">/g)];
+ assert.equal(icons.length,1);
+ const avatar=Buffer.from(icons[0][1],'base64');
+ assert.equal(createHash('sha256').update(avatar).digest('hex'),'ac835db154ed10e731f63e7ea242409a7bd8603b817b8ad08ee9ef13796ab174');
+ assert.equal(avatar.subarray(0,3).toString('hex'),'ffd8ff');
+ assert.doesNotMatch(html,/<link\b[^>]*rel="icon"[^>]*href="https?:/);
+});
 function run(directory,mode='artifact'){
  assert.ok(existsSync(script),'Task 8 public package validator is missing');
  return spawnSync(process.execPath,[script,'--'+mode,directory],{encoding:'utf8'});
