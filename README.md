@@ -32,7 +32,7 @@ URL 还会按 query 与带赋值的 OAuth/路由 fragment 参数名阻断 access
 
 ## 发布
 
-页签图标使用 2026-10-30 核对的 Tibo X 头像原始 JPEG（400×400）：来源为 `https://pbs.twimg.com/profile_images/2093807917833281537/2yBgpwVV_400x400.jpg`，SHA-256 为 `ac835db154ed10e731f63e7ea242409a7bd8603b817b8ad08ee9ef13796ab174`。图片字节以 data URL 内嵌于 `index.html` 的 `rel="icon"`，随站点发布，不请求外部头像服务，不改绘图片。保持现有 6 个站点文件、13 个仓库文件及 VPS 发布器白名单；测试核对内嵌图片摘要。更换头像时须重新核对原图并同步测试摘要。
+页签图标使用 2026-10-30 核对的 Tibo X 头像原始 JPEG（400×400）：来源为 `https://pbs.twimg.com/profile_images/2093807917833281537/2yBgpwVV_400x400.jpg`，SHA-256 为 `ac835db154ed10e731f63e7ea242409a7bd8603b817b8ad08ee9ef13796ab174`。图片字节以 data URL 内嵌于 `index.html` 的 `rel="icon"`，随站点发布，不请求外部头像服务，不改绘图片。保持现有 6 个站点文件、13 个仓库文件及 VPS 发布器白名单；页面顶部标题旁也复用同一原图，以 35×35 像素显示并保留圆角；图片使用空 alt，避免与紧邻的品牌文字重复播报。测试核对内嵌图片摘要及顶部图片与图标的一致性。更换头像时须重新核对原图并同步测试摘要。界面的原绿色强调、计时卡与状态背景统一使用橙色系，保留原有状态文字和响应式布局。
 
 仓库目标为 `skommando/reset-notice-page`，发布分支为 `main`。`.github/workflows/pages.yml` 只在 main 推送或人工触发后运行：先执行 Node 契约/包验证测试与仓库白名单检查，再将明确的 `index.html`、`assets/`、`data/`、`CNAME` 复制到独立临时目录，并再次按站点包白名单验证。上传只指向该临时目录，绝不上传仓库根、tests、README 或验证脚本。站点包仅含 6 个固定文件，新增资产须同步更新白名单并评审。
 

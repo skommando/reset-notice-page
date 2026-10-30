@@ -1,5 +1,5 @@
 
-:root{--bg:#f6f5f0;--paper:#fffefa;--ink:#252b36;--muted:#697078;--line:#e4e5dd;--indigo:#5355aa;--teal:#287769;--soft:#edf3eb}
+:root{--bg:#f6f5f0;--paper:#fffefa;--ink:#252b36;--muted:#697078;--line:#e4e5dd;--indigo:#5355aa;--accent:#a64a16;--soft:#fff0df}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
 button,select,textarea{font:inherit}
@@ -12,12 +12,12 @@ a{color:var(--indigo)}
 .shell{max-width:1460px;margin:auto;padding:26px 40px 40px}
 .top{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:20px;gap:16px}
 .brand{display:flex;gap:12px;align-items:center;font-weight:700;letter-spacing:.04em}
-.mark{display:grid;place-items:center;background:var(--ink);color:#fff;width:35px;height:35px;border-radius:11px;font:25px Georgia}
+.mark{display:block;flex:none;width:35px;height:35px;border-radius:11px;object-fit:cover}
 .topnote,.eyebrow,.minor{font-size:12px;color:var(--muted)}
 .topnote{display:flex;gap:9px;align-items:center}
-.dot{width:6px;height:6px;background:var(--teal);border-radius:50%}
+.dot{width:6px;height:6px;background:var(--accent);border-radius:50%}
 .hero{display:flex;justify-content:space-between;align-items:end;gap:20px;padding:32px 0 24px}
-.eyebrow{letter-spacing:.14em;font-weight:650;color:var(--teal)}
+.eyebrow{letter-spacing:.14em;font-weight:650;color:var(--accent)}
 h1{font-size:37px;letter-spacing:-.045em;margin:7px 0 8px;font-weight:650;line-height:1.2}
 p{margin:0}
 .subtitle{color:var(--muted)}
@@ -52,10 +52,10 @@ h2{font-size:20px;margin:0;font-weight:600;letter-spacing:-.025em}
 .day.selected{border:1.5px solid var(--indigo);box-shadow:inset 0 0 0 1px var(--indigo)}
 .day.has-events.selected:hover{box-shadow:inset 0 0 0 1px var(--indigo)}
 .day .num{font-size:12px;line-height:1.1}
-.day .count{font-size:10px;color:#206356;line-height:1.25}
+.day .count{font-size:10px;color:#9a4a1d;line-height:1.25}
 .day .markers{display:flex;gap:3px;flex-wrap:wrap;margin-top:auto}
 .marker{display:block;width:6px;height:6px;border-radius:2px;background:#6c6db4}
-.marker.banked{background:#529385}
+.marker.banked{background:#c56b2e}
 .marker.unknown{background:#aaa993}
 .marker.planned{background:transparent;border:1px solid #9b986f}
 .day .planlabel{font-size:9px;color:#625836;line-height:1.2}
@@ -73,9 +73,9 @@ h2{font-size:20px;margin:0;font-weight:600;letter-spacing:-.025em}
 .eventid{color:var(--muted);font-size:10px;letter-spacing:.06em;margin-bottom:6px}
 .badges{display:flex;gap:5px;flex-wrap:wrap;margin:10px 0}
 .badge{font-size:10px;border-radius:5px;padding:2px 7px;background:#eeedf8;color:#5956a4}
-.badge.banked{background:#e4f1e9;color:#377665}
+.badge.banked{background:#fbe4d0;color:#8e421b}
 .badge.unknown{background:#efeee5;color:#726e53}
-.badge.state{background:#f0f0ec;color:#667065}
+.badge.state{background:#f4eee7;color:#77604f}
 .eventtime{font-size:12px;margin-top:6px}
 .eventnote{font-size:11px;color:var(--muted);margin:5px 0 12px}
 .sourcelink{font-size:11px}
@@ -214,11 +214,11 @@ button,select{min-height:36px}
 .posttext { white-space: pre-wrap; overflow-wrap: anywhere; }
 
 /* Compact challenge notes retain the original calendar and expanded tweets. */
-.resetclock{display:flex;align-items:center;gap:14px 28px;flex-wrap:wrap;margin:0 0 26px;padding:26px 32px;border:1px solid #28594f;border-radius:18px;background:#173f39;color:#e3f3eb;font-size:15px;box-shadow:0 8px 24px #173f3912}
-.resetclock strong{font-size:clamp(52px,7vw,88px);font-weight:650;line-height:1.1;letter-spacing:-.045em;color:#c8f597;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
-.resetclock .minor{font-size:12px;color:#c1d6cd;margin-left:auto}
+.resetclock{display:flex;align-items:center;gap:14px 28px;flex-wrap:wrap;margin:0 0 26px;padding:26px 32px;border:1px solid #9b4c1a;border-radius:18px;background:#71340f;color:#fff2e6;font-size:15px;box-shadow:0 8px 24px #71340f12}
+.resetclock strong{font-size:clamp(52px,7vw,88px);font-weight:650;line-height:1.1;letter-spacing:-.045em;color:#ffd18a;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.resetclock .minor{font-size:12px;color:#f3d3b8;margin-left:auto}
 .challengetitleline{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.challengeprogress{display:inline-block;padding:4px 11px;border-radius:20px;background:#e6efdf;color:#355c32;font-size:13px;font-weight:650;white-space:nowrap}
+.challengeprogress{display:inline-block;padding:4px 11px;border-radius:20px;background:#fce7cc;color:#88400e;font-size:13px;font-weight:650;white-space:nowrap}
 .resetclock a{color:inherit;text-underline-offset:3px}
 .challenge{margin-top:26px;overflow:hidden}
 .challenge .panelhead{gap:16px;flex-wrap:wrap}
@@ -230,9 +230,9 @@ button,select{min-height:36px}
 .challengecard h3{font-size:15px;line-height:1.5;margin:0 0 9px}
 .challengesummary{font-size:12px;line-height:1.8;margin:0}
 .improvements{font-size:11px;color:var(--muted);line-height:1.8;padding-left:16px;margin:10px 0}
-.resetday{border-color:#c6c5a5;background:#f1f2e5}
-.resetbadge{font-size:9px;letter-spacing:.5px;color:#535a32;background:#e2e7cd;border-radius:4px;padding:4px 6px;font-weight:700}
-.bankednote{font-size:10px;line-height:1.7;color:#646743;margin:10px 0 0}
+.resetday{border-color:#e4b888;background:#ffefd9}
+.resetbadge{font-size:9px;letter-spacing:.5px;color:#7b3b0d;background:#f8d6a7;border-radius:4px;padding:4px 6px;font-weight:700}
+.bankednote{font-size:10px;line-height:1.7;color:#88502a;margin:10px 0 0}
 .challengelinks{display:flex;gap:8px 12px;flex-wrap:wrap;margin-top:12px}
 .challengelinks a{font-size:10px;color:var(--muted);text-underline-offset:3px}
 .upcoming{background:transparent;padding:12px 16px;opacity:.65}

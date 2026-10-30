@@ -15,6 +15,9 @@ test('favicon embeds the verified Tibo avatar without an external request or new
  const avatar=Buffer.from(icons[0][1],'base64');
  assert.equal(createHash('sha256').update(avatar).digest('hex'),'ac835db154ed10e731f63e7ea242409a7bd8603b817b8ad08ee9ef13796ab174');
  assert.equal(avatar.subarray(0,3).toString('hex'),'ffd8ff');
+ const brand=html.match(/<img class="mark" src="(data:image\/jpeg;base64,[A-Za-z0-9+/=]+)" width="35" height="35" alt="">TIBO \/ RESET ATLAS/);
+ assert.ok(brand,'header keeps the text brand and a decorative avatar with fixed dimensions');
+ assert.equal(brand[1],'data:image/jpeg;base64,'+icons[0][1]);
  assert.doesNotMatch(html,/<link\b[^>]*rel="icon"[^>]*href="https?:/);
 });
 function run(directory,mode='artifact'){
@@ -116,7 +119,7 @@ for(const suffix of ['?access_token=SYNTHETIC_REVIEW_ONLY','?%61ccess%5Ftoken=SY
 
 test('challenge UI preserves tweet layout and adds independent timer and 28-day section',()=>{
  const html=readFileSync(join(root,'index.html'),'utf8'),app=readFileSync(join(root,'assets/app.mjs'),'utf8');
- assert.match(html,/减额不是代表你的错，重置不是唯一的结果/);assert.match(html,/站起来蹬。/);
+ assert.match(html,/<h1>减额不是代表你的错，重置不是唯一的结果 -- 已取消减额版<\/h1>/);assert.match(html,/站起来蹬。/);
  assert.match(html,/id="elapsed"/);assert.match(html,/id="challengegrid"/);
  assert.ok(html.indexOf('id="challengegrid"')>html.indexOf('id="detail"'));
  assert.match(app,/visibilitychange/);assert.match(app,/60000/);assert.match(app,/loadChallenge/);
@@ -176,7 +179,7 @@ test('loaded calendar hides only the redundant total status and preserves empty/
 test('reset timer is a prominent responsive card with a distinct small basis',()=>{
  const css=readFileSync(join(root,'assets/styles.css'),'utf8');
  const html=readFileSync(join(root,'index.html'),'utf8');
- assert.match(css,/\.resetclock\{[^}]*background:#173f39/);
+ assert.match(css,/\.resetclock\{[^}]*background:#71340f/);
  assert.match(css,/\.resetclock strong\{[^}]*font-size:clamp\(52px,7vw,88px\)/);
  assert.match(css,/\.resetclock \.minor\{[^}]*font-size:12px/);
  assert.match(html,/id="elapsedbasis" class="minor"/);

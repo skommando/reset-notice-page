@@ -111,7 +111,7 @@ test('UI assets preserve approved title and secure DOM-only rendering',()=>{
  const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
  const app=readFileSync(new URL('../assets/app.mjs',import.meta.url),'utf8');
  const css=readFileSync(new URL('../assets/styles.css',import.meta.url),'utf8');
- assert.match(html,/<h1>减额不是代表你的错，重置不是唯一的结果<\/h1>/);
+ assert.match(html,/<h1>减额不是代表你的错，重置不是唯一的结果 -- 已取消减额版<\/h1>/);
  assert.match(html,/<p class="subtitle">站起来蹬。<\/p>/);
 
  assert.match(html,/assets\/app.mjs/);
