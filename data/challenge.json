@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-10-29T20:06:45.666Z",
+  "updated_at": "2026-10-31T06:01:42.000Z",
   "pledge_url": "https://x.com/thsottiaux/status/2106845241357824205",
   "days": [
     {
@@ -897,6 +897,36 @@
         }
       ],
       "reset": null
+    },
+    {
+      "day": 26,
+      "title_zh": "手机多账户切换与预存重置预告",
+      "summary_zh": "手机端已支持方便地切换多个账户，桌面端即将推出；作者另预告接下来两天将是预存重置（banked），未确认发放，具体日期时区、发放时刻、适用范围及条件未说明。",
+      "improvements": [
+        {
+          "text_zh": "手机端现可方便地切换多个账户；桌面端仅为即将推出的预告，未确认已经上线。",
+          "source_urls": [
+            "https://x.com/thsottiaux/status/2116405414921384099"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "url": "https://x.com/thsottiaux/status/2116405414921384099",
+          "published_at": "2026-10-31T05:42:26.485Z",
+          "time_basis": "id_inferred",
+          "role": "announcement"
+        }
+      ],
+      "reset": {
+        "kind": "banked_reset_grant",
+        "status": "announced",
+        "completion_source_url": null,
+        "executed_at": null,
+        "execution_source_url": null,
+        "planned_deadline_at": null,
+        "planned_deadline_source_url": null
+      }
     }
   ]
 }
