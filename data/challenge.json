@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-10-31T06:01:42.000Z",
+  "updated_at": "2026-11-02T00:03:18.000Z",
   "pledge_url": "https://x.com/thsottiaux/status/2106845241357824205",
   "days": [
     {
@@ -914,6 +914,29 @@
         {
           "url": "https://x.com/thsottiaux/status/2116405414921384099",
           "published_at": "2026-10-31T05:42:26.485Z",
+          "time_basis": "id_inferred",
+          "role": "announcement"
+        }
+      ],
+      "reset": {
+        "kind": "banked_reset_grant",
+        "status": "announced",
+        "completion_source_url": null,
+        "executed_at": null,
+        "execution_source_url": null,
+        "planned_deadline_at": null,
+        "planned_deadline_source_url": null
+      }
+    },
+    {
+      "day": 28,
+      "title_zh": "第二次预存重置公告",
+      "summary_zh": "作者明确标注 Day 28，并发布“Banked 2/2”。这是第二次预存重置的进展公告；短帖未明确确认发放完成，具体发放时刻、适用范围与条件未说明，不代表即时用量重置。",
+      "improvements": [],
+      "sources": [
+        {
+          "url": "https://x.com/thsottiaux/status/2117035794678546764",
+          "published_at": "2026-11-01T23:27:20.731Z",
           "time_basis": "id_inferred",
           "role": "announcement"
         }
